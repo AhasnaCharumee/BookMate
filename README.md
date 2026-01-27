@@ -5,11 +5,18 @@ A beautiful, feature-rich book management application built with **React Native*
 ## ✨ Features
 
 ### 📖 Book Management
-- **Add Books** - Easily add new books to your collection with title and author
-- **Edit Books** - Update book information anytime
+- **Add Books** - Easily add new books with title, author, and optional cover photos (front & back)
+- **Edit Books** - Update book information, covers, and reading status anytime
 - **Delete Books** - Remove books from your library
-- **Book Details** - View comprehensive information about each book
+- **Book Details** - View comprehensive information about each book with cover images
 - **Reading Status** - Track books as "To Read", "Reading", or "Completed"
+- **Camera Integration** - Capture book cover photos using device camera
+
+### 📸 Photo Management
+- **Book Covers** - Add front and back cover photos to your books
+- **Profile Photo** - Upload a profile picture from your gallery
+- **Gallery Access** - Pick photos from device storage (iOS & Android)
+- **Image Editing** - Crop and resize photos before saving
 
 ### 📊 Reading Statistics
 - **Total Books Count** - See how many books you have
@@ -19,22 +26,23 @@ A beautiful, feature-rich book management application built with **React Native*
 
 ### 🔐 Authentication
 - **Email/Password Login** - Secure authentication with email and password
-- **Google Sign-In** - Quick sign-in with your Google account
-- **Auto Persistence** - User sessions are saved locally with AsyncStorage
+- **Fast Login** - Optimized auth with immediate navigation and proper loader management
+- **Auto Persistence** - User sessions are saved with AsyncStorage (Firebase + Custom)
 - **Secure Logout** - One-tap logout with session cleanup
 
 ### 👤 User Profile
-- **Profile Dashboard** - View your profile information
+- **Profile Dashboard** - View your profile with customizable photo
 - **Reading Statistics** - See your reading metrics at a glance
+- **Profile Photo** - Add and update your profile picture from gallery
 - **Account Management** - Manage your account settings
 - **Secure Logout** - Easy logout button with confirmation
 
 ### 🎨 Modern UI/UX
 - **Dark Theme** - Sleek dark mode with indigo accents
 - **Responsive Design** - Optimized for all screen sizes
-- **Smooth Navigation** - Intuitive routing with Expo Router
+- **Smooth Navigation** - Intuitive routing with Expo Router and proper stack management
 - **Loading States** - Beautiful loading indicators
-- **Success Feedback** - Clear alerts and confirmations
+- **Success Feedback** - Clear alerts with proper timing and callbacks
 
 ## 🚀 Tech Stack
 
@@ -43,11 +51,14 @@ A beautiful, feature-rich book management application built with **React Native*
 - **Expo** - Managed React Native framework
 - **TypeScript** - Type-safe code
 - **NativeWind** - Tailwind CSS for React Native
-- **Expo Router** - File-based routing
+- **Expo Router** - File-based routing with stack management
+- **Expo Camera** - Native camera access for book covers
+- **Expo Image Picker** - Gallery and photo selection
 
 ### Backend & Database
-- **Firebase Authentication** - Secure user authentication
-- **Firebase Firestore** - Real-time NoSQL database
+- **Firebase Authentication** - Secure user authentication with memory + AsyncStorage persistence
+- **Firebase Firestore** - Real-time NoSQL database with subcollection structure
+- **Firebase Storage** - Cloud storage for book cover images (future enhancement)
 - **Firebase Storage** - Cloud file storage
 
 ### State Management
@@ -97,43 +108,84 @@ bookMate/
 └── package.json
 ```
 
+## � Recent Fixes & Improvements (v1.1.0)
+
+### ✅ Authentication & Navigation
+- **Removed Audio Permission** - Cleared unused media library granular permissions to prevent Expo Go errors
+- **Fixed Login Delay** - `hideLoader()` called immediately after successful login (no waiting for auth state)
+- **Optimized Navigation** - Changed `router.push()` to `router.replace()` to remove pages from stack
+- **Proper Error Handling** - Loader hidden in both success and error cases
+
+### ✅ Book Management  
+- **Fixed handleAddBook** - Removed setTimeout, alert shows immediately with proper callback
+- **Home Page Thumbnails** - Book list displays cover images for visual identification
+- **Enhanced Edit Screen** - Added camera integration to retake book cover photos
+- **Cleaner Error Messages** - Better user feedback with simplified alerts
+
+### ✅ User Interface
+- **Fixed Camera Props** - Changed `autoFocus="on"` to `autofocus="on"` (correct naming)
+- **Fixed Icon Names** - Changed `camera-off` to `camera-outline` (valid Ionicons)
+- **Profile Photo Upload** - Users can add/update profile pictures from gallery using `expo-image-picker`
+- **Improved Loading States** - Proper visibility to prevent modals blocking alerts
+
+### ✅ Database Structure
+- **Firestore Subcollections** - Updated to `users/{userId}/books/{bookId}` pattern
+- **Security Rules Applied** - Proper Firestore rules for authenticated user access
+- **Removed Redundant Checks** - Simplified book service methods with path-level security
+
 ## 🛠️ Installation
 
 ### Prerequisites
 - Node.js (v18 or higher)
 - npm or yarn
-- Expo CLI
+- Expo CLI: `npm install -g expo-cli`
+- Android emulator or Expo Go app on physical device
 
 ### Setup Steps
 
 1. **Clone the repository**
 ```bash
 git clone https://github.com/AhasnaCharumee/BookMate.git
-cd bookMate
+cd BookMate
 ```
 
 2. **Install dependencies**
 ```bash
 npm install
+npm install expo-camera expo-image-picker
 ```
 
-3. **Set up Firebase**
-- The app uses Firebase project `book-52c43`
-- Firebase credentials are already configured in `services/firebase.ts`
-- No additional setup needed for Firebase
+3. **Configure Firebase**
+- Go to [Firebase Console](https://console.firebase.google.com)
+- Select your project
+- Update **Firestore Rules** (see below)
 
-4. **Start the development server**
+4. **Start development server**
 ```bash
-npm start
-# or
-npx expo start
+npx expo start -c
 ```
 
-5. **Run on device/emulator**
-- Press `a` for Android
-- Press `i` for iOS
-- Press `w` for web
-- Scan QR code with Expo Go app
+5. **Run on device**
+- Press `a` for Android Emulator
+- Press `i` for iOS Simulator
+- Scan QR code with Expo Go app on physical device
+
+### Firebase Security Rules
+
+Navigate to **Firestore Database → Rules** and replace with:
+
+```
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /users/{userId}/books/{bookId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+  }
+}
+```
+
+Click **Publish** to apply.
 
 ## 🔑 Authentication
 
