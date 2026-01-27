@@ -5,7 +5,8 @@ export default function BooksLayout() {
     <Stack screenOptions={{ headerShown: false }}>
       <Stack.Screen name="add" />
       <Stack.Screen name="[id]" />
-      <Stack.Screen name="edit/[id]" />
+      {/* Nested edit stack handles [id] inside edit/_layout.tsx */}
+      <Stack.Screen name="edit" />
     </Stack>
   );
 }
