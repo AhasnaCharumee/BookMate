@@ -1,7 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { User as FirebaseUser, onAuthStateChanged, signOut } from 'firebase/auth';
 import React, { createContext, ReactNode, useEffect, useState } from 'react';
-import { auth } from '../config/firebaseConfig';
+import { auth } from '../services/firebase';
 
 export interface AuthContextType {
   user: FirebaseUser | null;
