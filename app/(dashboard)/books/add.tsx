@@ -1,5 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import { CameraView, useCameraPermissions } from 'expo-camera';
+import * as MediaLibrary from 'expo-media-library';
 import { router } from 'expo-router';
 import React, { useRef, useState } from 'react';
 import {
@@ -29,17 +30,23 @@ export default function AddBookScreen() {
   const [cameraVisible, setCameraVisible] = useState(false);
   const [currentCover, setCurrentCover] = useState<'front' | 'back' | null>(null);
   const [permission, requestPermission] = useCameraPermissions();
+  const [mediaPermission, requestMediaPermission] = MediaLibrary.usePermissions();
   const cameraRef = useRef<any>(null);
 
-  // Request camera permission on mount
+  // Request permissions on mount
   React.useEffect(() => {
-    const requestCameraPermission = async () => {
+    const requestPermissions = async () => {
+      // Request camera permission
       if (permission && !permission.granted && permission.canAskAgain) {
         await requestPermission();
       }
+      // Request media library permission
+      if (mediaPermission && !mediaPermission.granted && mediaPermission.canAskAgain) {
+        await requestMediaPermission();
+      }
     };
-    requestCameraPermission();
-  }, [permission, requestPermission]);
+    requestPermissions();
+  }, [permission, mediaPermission, requestPermission, requestMediaPermission]);
 
   const openCamera = async (coverType: 'front' | 'back') => {
     // Check if permission is granted
@@ -58,8 +65,24 @@ export default function AddBookScreen() {
     if (cameraRef.current) {
       try {
         console.log('Taking picture...');
-        const photo = await cameraRef.current.takePictureAsync({ quality: 0.8, base64: false });
+        const photo = await cameraRef.current.takePictureAsync({ 
+          quality: 0.8,
+          base64: false,
+          mute: false,
+        });
         console.log('Photo taken:', photo.uri);
+        
+        // Try to save to media library if permission granted
+        if (mediaPermission?.granted) {
+          try {
+            console.log('Saving to media library...');
+            const asset = await MediaLibrary.createAssetAsync(photo.uri);
+            console.log('Photo saved to gallery:', asset.id);
+            Alert.alert('Photo Saved', 'Photo saved to device gallery');
+          } catch (saveError) {
+            console.warn('Could not save to gallery:', saveError);
+          }
+        }
         
         if (currentCover === 'front') {
           setFrontCoverUri(photo.uri);
@@ -248,24 +271,41 @@ export default function AddBookScreen() {
 
       {/* Camera Modal */}
       <Modal visible={cameraVisible} animationType="slide">
-        <View className="flex-1 bg-black">
+        <View style={{ flex: 1, backgroundColor: 'black' }}>
           {permission?.granted ? (
             <>
               <CameraView 
                 ref={cameraRef} 
-                className="flex-1" 
+                style={{ flex: 1, width: '100%', height: '100%' }}
                 facing="back"
+                mode="picture"
                 onCameraReady={() => console.log('Camera ready')}
               />
-              <View className="absolute bottom-0 w-full bg-black/70 pb-8 pt-4">
-                <View className="flex-row justify-around items-center px-6">
+              <View style={{ 
+                position: 'absolute', 
+                bottom: 0, 
+                width: '100%', 
+                backgroundColor: 'rgba(0, 0, 0, 0.7)', 
+                paddingBottom: 32, 
+                paddingTop: 16 
+              }}>
+                <View style={{ 
+                  flexDirection: 'row', 
+                  justifyContent: 'space-around', 
+                  alignItems: 'center', 
+                  paddingHorizontal: 24 
+                }}>
                   {/* Cancel Button */}
                   <TouchableOpacity
                     onPress={() => {
                       setCameraVisible(false);
                       setCurrentCover(null);
                     }}
-                    className="bg-red-600 rounded-full p-4"
+                    style={{ 
+                      backgroundColor: '#dc2626', 
+                      borderRadius: 9999, 
+                      padding: 16 
+                    }}
                   >
                     <Ionicons name="close" size={28} color="white" />
                   </TouchableOpacity>
@@ -273,15 +313,25 @@ export default function AddBookScreen() {
                   {/* Capture Button */}
                   <TouchableOpacity
                     onPress={takePicture}
-                    className="bg-indigo-600 rounded-full p-6"
+                    style={{ 
+                      backgroundColor: '#6366f1', 
+                      borderRadius: 9999, 
+                      padding: 24 
+                    }}
                   >
                     <Ionicons name="camera" size={36} color="white" />
                   </TouchableOpacity>
 
                   {/* Placeholder for symmetry */}
-                  <View className="w-14" />
+                  <View style={{ width: 56 }} />
                 </View>
-                <Text className="text-white text-center mt-3 text-base font-semibold">
+                <Text style={{ 
+                  color: 'white', 
+                  textAlign: 'center', 
+                  marginTop: 12, 
+                  fontSize: 16, 
+                  fontWeight: '600' 
+                }}>
                   {currentCover === 'front' ? 'Capture Front Cover' : 'Capture Back Cover'}
                 </Text>
               </View>
