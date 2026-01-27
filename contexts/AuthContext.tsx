@@ -1,8 +1,8 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import { User as FirebaseUser, onAuthStateChanged, signOut } from 'firebase/auth';
 import React, { createContext, ReactNode, useEffect, useState } from 'react';
 import { auth } from '../services/firebase';
-import { GoogleSignin } from '@react-native-google-signin/google-signin';
 
 export interface AuthContextType {
   user: FirebaseUser | null;

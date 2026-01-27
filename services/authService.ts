@@ -1,15 +1,15 @@
+import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import {
     AuthError,
     createUserWithEmailAndPassword,
+    GoogleAuthProvider,
+    signInWithCredential,
     signInWithEmailAndPassword,
     signOut,
     User,
-    GoogleAuthProvider,
-    signInWithCredential,
 } from 'firebase/auth';
 import { addDoc, collection, doc, getDoc, getDocs, query, setDoc, where } from 'firebase/firestore';
 import { auth, db as firestore } from './firebase';
-import { GoogleSignin } from '@react-native-google-signin/google-signin';
 
 export interface UserProfile {
   uid: string;
@@ -70,11 +70,8 @@ export class AuthService {
         offlineAccess: true,
       });
 
-      // Check if user is already signed in
-      const isSignedIn = await GoogleSignin.isSignedIn();
-      if (!isSignedIn) {
-        await GoogleSignin.signIn();
-      }
+      // Sign in with Google
+      await GoogleSignin.signIn();
 
       // Get the ID token
       const tokens = await GoogleSignin.getTokens();
