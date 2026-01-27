@@ -1,6 +1,7 @@
 import {
     AuthError,
     createUserWithEmailAndPassword,
+    signInWithEmailAndPassword,
     signOut,
     User
 } from 'firebase/auth';
@@ -38,6 +39,19 @@ export class AuthService {
 
       await setDoc(doc(firestore, 'users', user.uid), userProfile);
 
+      return user;
+    } catch (error) {
+      const authError = error as AuthError;
+      throw new Error(this.getErrorMessage(authError.code));
+    }
+  }
+
+  /**
+   * Login with email and password
+   */
+  static async login(email: string, password: string): Promise<User> {
+    try {
+      const { user } = await signInWithEmailAndPassword(auth, email, password);
       return user;
     } catch (error) {
       const authError = error as AuthError;
