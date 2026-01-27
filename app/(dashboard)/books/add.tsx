@@ -33,12 +33,23 @@ export default function AddBookScreen() {
 
   // Request camera permission on mount
   React.useEffect(() => {
-    if (!permission?.granted) {
-      requestPermission();
-    }
-  }, []);
+    const requestCameraPermission = async () => {
+      if (permission && !permission.granted && permission.canAskAgain) {
+        await requestPermission();
+      }
+    };
+    requestCameraPermission();
+  }, [permission, requestPermission]);
 
-  const openCamera = (coverType: 'front' | 'back') => {
+  const openCamera = async (coverType: 'front' | 'back') => {
+    // Check if permission is granted
+    if (!permission?.granted) {
+      const result = await requestPermission();
+      if (!result.granted) {
+        Alert.alert('Permission Denied', 'Camera permission is required to capture photos');
+        return;
+      }
+    }
     setCurrentCover(coverType);
     setCameraVisible(true);
   };
@@ -47,7 +58,7 @@ export default function AddBookScreen() {
     if (cameraRef.current) {
       try {
         console.log('Taking picture...');
-        const photo = await cameraRef.current.takePictureAsync({ quality: 0.8 });
+        const photo = await cameraRef.current.takePictureAsync({ quality: 0.8, base64: false });
         console.log('Photo taken:', photo.uri);
         
         if (currentCover === 'front') {
@@ -240,8 +251,13 @@ export default function AddBookScreen() {
         <View className="flex-1 bg-black">
           {permission?.granted ? (
             <>
-              <CameraView ref={cameraRef} className="flex-1" facing="back" />
-              <View className="absolute bottom-0 w-full bg-black/50 pb-8 pt-4">
+              <CameraView 
+                ref={cameraRef} 
+                className="flex-1" 
+                facing="back"
+                onCameraReady={() => console.log('Camera ready')}
+              />
+              <View className="absolute bottom-0 w-full bg-black/70 pb-8 pt-4">
                 <View className="flex-row justify-around items-center px-6">
                   {/* Cancel Button */}
                   <TouchableOpacity
@@ -249,7 +265,7 @@ export default function AddBookScreen() {
                       setCameraVisible(false);
                       setCurrentCover(null);
                     }}
-                    className="bg-slate-700 rounded-full p-4"
+                    className="bg-red-600 rounded-full p-4"
                   >
                     <Ionicons name="close" size={28} color="white" />
                   </TouchableOpacity>
@@ -265,20 +281,28 @@ export default function AddBookScreen() {
                   {/* Placeholder for symmetry */}
                   <View className="w-14" />
                 </View>
-                <Text className="text-white text-center mt-3">
+                <Text className="text-white text-center mt-3 text-base font-semibold">
                   {currentCover === 'front' ? 'Capture Front Cover' : 'Capture Back Cover'}
                 </Text>
               </View>
             </>
           ) : (
-            <View className="flex-1 justify-center items-center px-6">
+            <View className="flex-1 justify-center items-center px-6 bg-slate-950">
               <Ionicons name="camera-outline" size={64} color="#6366f1" />
-              <Text className="text-white text-center text-lg mt-4 mb-6">
-                Camera permission is required to capture book covers
+              <Text className="text-white text-center text-lg mt-4 mb-6 font-semibold">
+                Camera Permission Required
+              </Text>
+              <Text className="text-slate-400 text-center mb-6">
+                Please allow camera access to capture book covers
               </Text>
               <TouchableOpacity
-                onPress={requestPermission}
-                className="bg-indigo-600 px-6 py-3 rounded-lg"
+                onPress={async () => {
+                  const result = await requestPermission();
+                  if (result?.granted) {
+                    // Permission granted, keep modal open for retake
+                  }
+                }}
+                className="bg-indigo-600 px-8 py-3 rounded-lg mb-4"
               >
                 <Text className="text-white font-bold">Grant Permission</Text>
               </TouchableOpacity>
@@ -289,7 +313,7 @@ export default function AddBookScreen() {
                 }}
                 className="mt-4"
               >
-                <Text className="text-slate-400">Cancel</Text>
+                <Text className="text-slate-300 text-base">Cancel</Text>
               </TouchableOpacity>
             </View>
           )}
