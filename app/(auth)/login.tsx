@@ -21,11 +21,11 @@ export default function LoginScreen() {
     try {
       const user = await AuthService.login(email, password);
       console.log('Login successful:', user.uid);
-      // Navigation will happen automatically through AuthContext
+      // Navigate to dashboard - AuthContext listener will also trigger
+      router.replace('/(dashboard)/home');
     } catch (error: any) {
       console.error('Login error:', error);
       Alert.alert('Login Failed', error.message || 'An error occurred');
-    } finally {
       hideLoader();
     }
   };

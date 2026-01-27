@@ -1,7 +1,12 @@
 // Import the functions you need from the SDKs you need
-import { getApp, getApps, initializeApp } from "firebase/app";
-import { initializeAuth, getAuth, getReactNativePersistence } from "firebase/auth/react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { getApp, getApps, initializeApp } from "firebase/app";
+// Use the React Native-specific entry so TypeScript sees `getReactNativePersistence`
+import {
+  getAuth,
+  getReactNativePersistence,
+  initializeAuth,
+} from "@firebase/auth/dist/rn/index";
 import { getFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
 
@@ -24,8 +29,8 @@ try {
   authInstance = initializeAuth(app, {
     persistence: getReactNativePersistence(AsyncStorage),
   });
-} catch (error) {
-  // If already initialized (hot reload), fall back to existing instance
+} catch (_error) {
+  // If already initialized (e.g., hot reload), reuse existing instance
   authInstance = getAuth(app);
 }
 
