@@ -14,8 +14,18 @@ export default function DashboardLayout() {
           borderTopColor: '#334155', // slate-700
           borderTopWidth: 1,
           height: TAB_BAR_CONFIG.height,
-          paddingBottom: 8,
+          paddingBottom: 12,
           paddingTop: 8,
+          position: 'absolute',
+          bottom: 30,
+          left: 10,
+          right: 10,
+          borderRadius: 16,
+          elevation: 8,
+          shadowColor: '#000',
+          shadowOffset: { width: 0, height: -2 },
+          shadowOpacity: 0.25,
+          shadowRadius: 8,
         },
         tabBarLabelStyle: {
           fontSize: 12,
@@ -38,15 +48,6 @@ export default function DashboardLayout() {
           title: NAVIGATION_ROUTES.SEARCH.label,
           tabBarIcon: ({ color, size }) => (
             <IconSymbol name={NAVIGATION_ROUTES.SEARCH.icon} color={color} size={size} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="books/add"
-        options={{
-          title: NAVIGATION_ROUTES.ADD.label,
-          tabBarIcon: ({ color, size }) => (
-            <IconSymbol name={NAVIGATION_ROUTES.ADD.icon} color={color} size={TAB_BAR_CONFIG.iconSize + 8} />
           ),
         }}
       />

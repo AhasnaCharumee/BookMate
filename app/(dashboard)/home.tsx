@@ -170,14 +170,6 @@ export default function HomeScreen() {
           />
         )}
       </View>
-
-      {/* Add Button */}
-      <TouchableOpacity
-        className="absolute bottom-6 right-6 bg-indigo-600 w-16 h-16 rounded-full items-center justify-center shadow-lg"
-        onPress={() => router.push('/(dashboard)/books/add')}
-      >
-        <Ionicons name="add" size={32} color="white" />
-      </TouchableOpacity>
     </View>
   );
 }
