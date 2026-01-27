@@ -168,6 +168,22 @@ export default function BookDetailsScreen() {
             </View>
           </View>
 
+          {/* Genre */}
+          {book.genre && (
+            <View className="flex-row items-center mb-4">
+              <Ionicons name="pricetag" size={20} color="#64748b" />
+              <Text className="text-slate-400 text-lg ml-2">{book.genre}</Text>
+            </View>
+          )}
+
+          {/* Description */}
+          {book.description && (
+            <View className="mb-4">
+              <Text className="text-slate-300 font-semibold mb-2">Description</Text>
+              <Text className="text-slate-400 leading-5">{book.description}</Text>
+            </View>
+          )}
+
           {/* Dates */}
           <View className="border-t border-slate-800 pt-4">
             <View className="flex-row items-center mb-2">

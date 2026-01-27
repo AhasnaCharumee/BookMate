@@ -9,7 +9,7 @@ import {
     updateDoc,
     where,
 } from 'firebase/firestore';
-import { firestore } from './firebase';
+import { db as firestore } from './firebase';
 
 export interface Book {
   id: string;
@@ -19,6 +19,8 @@ export interface Book {
   userId: string;
   frontCoverUri?: string;
   backCoverUri?: string;
+  description?: string;
+  genre?: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -29,6 +31,8 @@ export interface BookInput {
   status: 'reading' | 'completed' | 'to-read';
   frontCoverUri?: string;
   backCoverUri?: string;
+  description?: string;
+  genre?: string;
 }
 
 export class BookService {

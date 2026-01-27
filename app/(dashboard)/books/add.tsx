@@ -21,6 +21,8 @@ export default function AddBookScreen() {
   const { showLoader, hideLoader } = useLoader();
   const [title, setTitle] = useState('');
   const [author, setAuthor] = useState('');
+  const [genre, setGenre] = useState('');
+  const [description, setDescription] = useState('');
   const [status, setStatus] = useState<'reading' | 'completed' | 'to-read'>('to-read');
   const [frontCoverUri, setFrontCoverUri] = useState<string | null>(null);
   const [backCoverUri, setBackCoverUri] = useState<string | null>(null);
@@ -28,6 +30,13 @@ export default function AddBookScreen() {
   const [currentCover, setCurrentCover] = useState<'front' | 'back' | null>(null);
   const [permission, requestPermission] = useCameraPermissions();
   const cameraRef = useRef<any>(null);
+
+  // Request camera permission on mount
+  React.useEffect(() => {
+    if (!permission?.granted) {
+      requestPermission();
+    }
+  }, []);
 
   const openCamera = (coverType: 'front' | 'back') => {
     setCurrentCover(coverType);
@@ -37,7 +46,10 @@ export default function AddBookScreen() {
   const takePicture = async () => {
     if (cameraRef.current) {
       try {
-        const photo = await cameraRef.current.takePictureAsync();
+        console.log('Taking picture...');
+        const photo = await cameraRef.current.takePictureAsync({ quality: 0.8 });
+        console.log('Photo taken:', photo.uri);
+        
         if (currentCover === 'front') {
           setFrontCoverUri(photo.uri);
         } else {
@@ -45,8 +57,9 @@ export default function AddBookScreen() {
         }
         setCameraVisible(false);
         setCurrentCover(null);
-      } catch (error) {
-        Alert.alert('Error', 'Failed to take picture');
+      } catch (error: any) {
+        console.error('Camera error:', error);
+        Alert.alert('Error', 'Failed to take picture: ' + error.message);
       }
     }
   };
@@ -57,22 +70,29 @@ export default function AddBookScreen() {
       return;
     }
 
-    if (!user) return;
+    if (!user) {
+      Alert.alert('Error', 'User not authenticated');
+      return;
+    }
 
     showLoader();
     try {
-      await BookService.addBook(user.uid, {
+      console.log('Adding book:', { title, author, genre, description });
+      const bookId = await BookService.addBook(user.uid, {
         title,
         author,
         status,
+        genre: genre || undefined,
+        description: description || undefined,
         frontCoverUri: frontCoverUri || undefined,
         backCoverUri: backCoverUri || undefined,
       });
+      console.log('Book added successfully:', bookId);
       Alert.alert('Success', 'Book added successfully!');
       router.back();
     } catch (error: any) {
-      Alert.alert('Error', error.message);
-    } finally {
+      console.error('Error adding book:', error);
+      Alert.alert('Error', error.message || 'Failed to add book');
       hideLoader();
     }
   };
@@ -126,6 +146,33 @@ export default function AddBookScreen() {
             placeholderTextColor="#64748b"
             value={author}
             onChangeText={setAuthor}
+          />
+        </View>
+
+        {/* Genre Input */}
+        <View className="mb-4">
+          <Text className="text-slate-400 text-sm mb-2">Genre</Text>
+          <TextInput
+            className="bg-slate-800 text-white p-4 rounded-lg"
+            placeholder="e.g., Fiction, Science, Mystery"
+            placeholderTextColor="#64748b"
+            value={genre}
+            onChangeText={setGenre}
+          />
+        </View>
+
+        {/* Description Input */}
+        <View className="mb-4">
+          <Text className="text-slate-400 text-sm mb-2">Description</Text>
+          <TextInput
+            className="bg-slate-800 text-white p-4 rounded-lg"
+            placeholder="Enter book description"
+            placeholderTextColor="#64748b"
+            value={description}
+            onChangeText={setDescription}
+            multiline
+            numberOfLines={4}
+            textAlignVertical="top"
           />
         </View>
 
