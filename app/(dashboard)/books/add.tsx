@@ -1,6 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
 import { CameraView, useCameraPermissions } from 'expo-camera';
-import * as MediaLibrary from 'expo-media-library';
 import { router } from 'expo-router';
 import React, { useRef, useState } from 'react';
 import {
@@ -20,6 +19,16 @@ import { BookService } from '../../../services/bookService';
 export default function AddBookScreen() {
   const { user } = useAuth();
   const { showLoader, hideLoader } = useLoader();
+  
+  // Wait for user to be ready before rendering
+  if (!user) {
+    return (
+      <View className="flex-1 justify-center items-center bg-slate-950">
+        <Text className="text-white text-lg">Loading user...</Text>
+      </View>
+    );
+  }
+
   const [title, setTitle] = useState('');
   const [author, setAuthor] = useState('');
   const [genre, setGenre] = useState('');
@@ -30,23 +39,17 @@ export default function AddBookScreen() {
   const [cameraVisible, setCameraVisible] = useState(false);
   const [currentCover, setCurrentCover] = useState<'front' | 'back' | null>(null);
   const [permission, requestPermission] = useCameraPermissions();
-  const [mediaPermission, requestMediaPermission] = MediaLibrary.usePermissions();
   const cameraRef = useRef<any>(null);
 
-  // Request permissions on mount
+  // Request camera permission on mount only
   React.useEffect(() => {
-    const requestPermissions = async () => {
-      // Request camera permission
+    const requestCameraPermission = async () => {
       if (permission && !permission.granted && permission.canAskAgain) {
         await requestPermission();
       }
-      // Request media library permission
-      if (mediaPermission && !mediaPermission.granted && mediaPermission.canAskAgain) {
-        await requestMediaPermission();
-      }
     };
-    requestPermissions();
-  }, [permission, mediaPermission, requestPermission, requestMediaPermission]);
+    requestCameraPermission();
+  }, [permission, requestPermission]);
 
   const openCamera = async (coverType: 'front' | 'back') => {
     // Check if permission is granted
@@ -71,18 +74,6 @@ export default function AddBookScreen() {
           mute: false,
         });
         console.log('Photo taken:', photo.uri);
-        
-        // Try to save to media library if permission granted
-        if (mediaPermission?.granted) {
-          try {
-            console.log('Saving to media library...');
-            const asset = await MediaLibrary.createAssetAsync(photo.uri);
-            console.log('Photo saved to gallery:', asset.id);
-            Alert.alert('Photo Saved', 'Photo saved to device gallery');
-          } catch (saveError) {
-            console.warn('Could not save to gallery:', saveError);
-          }
-        }
         
         if (currentCover === 'front') {
           setFrontCoverUri(photo.uri);
@@ -110,8 +101,11 @@ export default function AddBookScreen() {
     }
 
     showLoader();
+
     try {
       console.log('Adding book:', { title, author, genre, description });
+      console.log('User ID:', user.uid);
+
       const bookId = await BookService.addBook(user.uid, {
         title,
         author,
@@ -121,13 +115,32 @@ export default function AddBookScreen() {
         frontCoverUri: frontCoverUri || undefined,
         backCoverUri: backCoverUri || undefined,
       });
-      console.log('Book added successfully:', bookId);
-      Alert.alert('Success', 'Book added successfully!');
-      router.back();
-    } catch (error: any) {
-      console.error('Error adding book:', error);
-      Alert.alert('Error', error.message || 'Failed to add book');
+
+      console.log('Book added successfully with ID:', bookId);
+
+      // Hide loader first
       hideLoader();
+
+      // Show success message
+      Alert.alert(
+        'Success',
+        'Book added successfully!',
+        [
+          {
+            text: 'OK',
+            onPress: () => {
+              console.log('Redirecting to home...');
+              router.replace('/(dashboard)/home');
+            }
+          }
+        ]
+      );
+
+    } catch (error: any) {
+      hideLoader();
+      console.error('Add book error:', error);
+
+      Alert.alert('Error', 'Failed to add book. Please try again.');
     }
   };
 

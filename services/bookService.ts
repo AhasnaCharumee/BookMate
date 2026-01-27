@@ -5,9 +5,7 @@ import {
     doc,
     getDoc,
     getDocs,
-    query,
-    updateDoc,
-    where,
+    updateDoc
 } from 'firebase/firestore';
 import { db as firestore } from './firebase';
 
@@ -39,9 +37,9 @@ export class BookService {
   // Get all books for a user
   static async getUserBooks(userId: string): Promise<Book[]> {
     try {
-      const booksRef = collection(firestore, 'books');
-      const q = query(booksRef, where('userId', '==', userId));
-      const querySnapshot = await getDocs(q);
+      // Use subcollection path: users/{userId}/books
+      const booksRef = collection(firestore, 'users', userId, 'books');
+      const querySnapshot = await getDocs(booksRef);
       
       const books: Book[] = [];
       querySnapshot.forEach((doc) => {
@@ -60,7 +58,8 @@ export class BookService {
   // Get a single book
   static async getBook(userId: string, bookId: string): Promise<Book> {
     try {
-      const bookRef = doc(firestore, 'books', bookId);
+      // Use subcollection path: users/{userId}/books/{bookId}
+      const bookRef = doc(firestore, 'users', userId, 'books', bookId);
       const bookDoc = await getDoc(bookRef);
       
       if (!bookDoc.exists()) {
@@ -68,12 +67,6 @@ export class BookService {
       }
       
       const book = { id: bookDoc.id, ...bookDoc.data() } as Book;
-      
-      // Verify ownership
-      if (book.userId !== userId) {
-        throw new Error('Unauthorized');
-      }
-      
       return book;
     } catch (error: any) {
       throw new Error(`Failed to fetch book: ${error.message}`);
@@ -83,18 +76,24 @@ export class BookService {
   // Add a new book
   static async addBook(userId: string, bookData: BookInput): Promise<string> {
     try {
-      const booksRef = collection(firestore, 'books');
+      console.log('Saving book to Firestore...');
+      console.log('User ID:', userId);
+      console.log('Book Data:', bookData);
+
+      // Use subcollection path: users/{userId}/books
+      const booksRef = collection(firestore, 'users', userId, 'books');
       const now = new Date().toISOString();
       
       const docRef = await addDoc(booksRef, {
         ...bookData,
-        userId,
         createdAt: now,
         updatedAt: now,
       });
       
+      console.log('Firestore success, doc id:', docRef.id);
       return docRef.id;
     } catch (error: any) {
+      console.error('Firestore add error:', error);
       throw new Error(`Failed to add book: ${error.message}`);
     }
   }
@@ -106,18 +105,8 @@ export class BookService {
     bookData: BookInput
   ): Promise<void> {
     try {
-      const bookRef = doc(firestore, 'books', bookId);
-      
-      // Verify ownership first
-      const bookDoc = await getDoc(bookRef);
-      if (!bookDoc.exists()) {
-        throw new Error('Book not found');
-      }
-      
-      const book = bookDoc.data() as Book;
-      if (book.userId !== userId) {
-        throw new Error('Unauthorized');
-      }
+      // Use subcollection path: users/{userId}/books/{bookId}
+      const bookRef = doc(firestore, 'users', userId, 'books', bookId);
       
       await updateDoc(bookRef, {
         ...bookData,
@@ -131,18 +120,8 @@ export class BookService {
   // Delete a book
   static async deleteBook(userId: string, bookId: string): Promise<void> {
     try {
-      const bookRef = doc(firestore, 'books', bookId);
-      
-      // Verify ownership first
-      const bookDoc = await getDoc(bookRef);
-      if (!bookDoc.exists()) {
-        throw new Error('Book not found');
-      }
-      
-      const book = bookDoc.data() as Book;
-      if (book.userId !== userId) {
-        throw new Error('Unauthorized');
-      }
+      // Use subcollection path: users/{userId}/books/{bookId}
+      const bookRef = doc(firestore, 'users', userId, 'books', bookId);
       
       await deleteDoc(bookRef);
     } catch (error: any) {

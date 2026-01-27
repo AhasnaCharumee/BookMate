@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import {
     Alert,
     FlatList,
+    Image,
     Text,
     TouchableOpacity,
     View,
@@ -89,34 +90,46 @@ export default function HomeScreen() {
   };
 
   const renderBook = ({ item }: { item: Book }) => (
-    <View className="bg-slate-800 p-4 rounded-lg mb-3">
-      <View className="flex-row justify-between items-start">
-        <View className="flex-1">
-          <Text className="text-white text-lg font-bold">{item.title}</Text>
-          <Text className="text-slate-400 mt-1">by {item.author}</Text>
-          <View className={`${getStatusColor(item.status)} px-3 py-1 rounded-full mt-2 self-start`}>
-            <Text className="text-white text-xs font-bold">
-              {getStatusText(item.status)}
-            </Text>
+    <TouchableOpacity onPress={() => router.push(`/(dashboard)/books/${item.id}`)}>
+      <View className="bg-slate-800 p-4 rounded-lg mb-3">
+        {/* Book Cover Image */}
+        {item.frontCoverUri && (
+          <Image
+            source={{ uri: item.frontCoverUri }}
+            className="w-full rounded-lg mb-3"
+            style={{ height: 150 }}
+            resizeMode="cover"
+          />
+        )}
+        
+        <View className="flex-row justify-between items-start">
+          <View className="flex-1">
+            <Text className="text-white text-lg font-bold">{item.title}</Text>
+            <Text className="text-slate-400 mt-1">by {item.author}</Text>
+            <View className={`${getStatusColor(item.status)} px-3 py-1 rounded-full mt-2 self-start`}>
+              <Text className="text-white text-xs font-bold">
+                {getStatusText(item.status)}
+              </Text>
+            </View>
+          </View>
+          
+          <View className="flex-row gap-2">
+            <TouchableOpacity
+              onPress={() => router.push(`/(dashboard)/books/edit/${item.id}`)}
+              className="bg-indigo-600 p-2 rounded-lg"
+            >
+              <Ionicons name="pencil" size={20} color="white" />
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => handleDeleteBook(item.id, item.title)}
+              className="bg-red-600 p-2 rounded-lg"
+            >
+              <Ionicons name="trash" size={20} color="white" />
+            </TouchableOpacity>
           </View>
         </View>
-        
-        <View className="flex-row gap-2">
-          <TouchableOpacity
-            onPress={() => router.push(`/(dashboard)/books/edit/${item.id}`)}
-            className="bg-indigo-600 p-2 rounded-lg"
-          >
-            <Ionicons name="pencil" size={20} color="white" />
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() => handleDeleteBook(item.id, item.title)}
-            className="bg-red-600 p-2 rounded-lg"
-          >
-            <Ionicons name="trash" size={20} color="white" />
-          </TouchableOpacity>
-        </View>
       </View>
-    </View>
+    </TouchableOpacity>
   );
 
   return (

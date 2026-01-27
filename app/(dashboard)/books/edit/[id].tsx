@@ -1,8 +1,11 @@
 import { Ionicons } from '@expo/vector-icons';
+import { CameraView, useCameraPermissions } from 'expo-camera';
 import { router, useLocalSearchParams } from 'expo-router';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
     Alert,
+    Image,
+    Modal,
     ScrollView,
     Text,
     TextInput,
@@ -20,6 +23,12 @@ export default function EditBookScreen() {
   const [title, setTitle] = useState('');
   const [author, setAuthor] = useState('');
   const [status, setStatus] = useState<'reading' | 'completed' | 'to-read'>('to-read');
+  const [frontCoverUri, setFrontCoverUri] = useState<string | null>(null);
+  const [backCoverUri, setBackCoverUri] = useState<string | null>(null);
+  const [cameraVisible, setCameraVisible] = useState(false);
+  const [currentCover, setCurrentCover] = useState<'front' | 'back' | null>(null);
+  const [permission, requestPermission] = useCameraPermissions();
+  const cameraRef = useRef<any>(null);
 
   useEffect(() => {
     loadBook();
@@ -34,11 +43,48 @@ export default function EditBookScreen() {
       setTitle(book.title);
       setAuthor(book.author);
       setStatus(book.status);
+      setFrontCoverUri(book.frontCoverUri || null);
+      setBackCoverUri(book.backCoverUri || null);
     } catch (error: any) {
       Alert.alert('Error', error.message);
       router.back();
     } finally {
       hideLoader();
+    }
+  };
+
+  const openCamera = async (coverType: 'front' | 'back') => {
+    if (!permission?.granted) {
+      const result = await requestPermission();
+      if (!result.granted) {
+        Alert.alert('Permission Denied', 'Camera permission is required to capture photos');
+        return;
+      }
+    }
+    setCurrentCover(coverType);
+    setCameraVisible(true);
+  };
+
+  const takePicture = async () => {
+    if (cameraRef.current) {
+      try {
+        const photo = await cameraRef.current.takePictureAsync({ 
+          quality: 0.8,
+          base64: false,
+        });
+        
+        if (currentCover === 'front') {
+          setFrontCoverUri(photo.uri);
+        } else {
+          setBackCoverUri(photo.uri);
+        }
+        
+        setCameraVisible(false);
+        setCurrentCover(null);
+      } catch (error) {
+        console.error('Error taking photo:', error);
+        Alert.alert('Error', 'Failed to take photo');
+      }
     }
   };
 
@@ -56,13 +102,20 @@ export default function EditBookScreen() {
         title,
         author,
         status,
+        frontCoverUri: frontCoverUri || undefined,
+        backCoverUri: backCoverUri || undefined,
       });
-      Alert.alert('Success', 'Book updated successfully!');
-      router.back();
-    } catch (error: any) {
-      Alert.alert('Error', error.message);
-    } finally {
+      
       hideLoader();
+      Alert.alert('Success', 'Book updated successfully!', [
+        {
+          text: 'OK',
+          onPress: () => router.back()
+        }
+      ]);
+    } catch (error: any) {
+      hideLoader();
+      Alert.alert('Error', 'Failed to update book');
     }
   };
 
@@ -94,6 +147,54 @@ export default function EditBookScreen() {
       </View>
 
       <ScrollView className="flex-1 px-6 pt-6">
+        {/* Book Covers */}
+        <View className="mb-4">
+          <Text className="text-slate-400 text-sm mb-2">Book Covers (Tap to retake)</Text>
+          <View className="flex-row gap-3 mb-3">
+            {/* Front Cover */}
+            <TouchableOpacity 
+              onPress={() => openCamera('front')}
+              className="flex-1 bg-slate-800 rounded-lg overflow-hidden"
+              style={{ height: 150 }}
+            >
+              {frontCoverUri ? (
+                <>
+                  <Image source={{ uri: frontCoverUri }} className="w-full h-full" resizeMode="cover" />
+                  <View className="absolute top-2 right-2 bg-indigo-600 rounded-full p-2">
+                    <Ionicons name="camera" size={16} color="white" />
+                  </View>
+                </>
+              ) : (
+                <View className="flex-1 justify-center items-center">
+                  <Ionicons name="camera" size={40} color="#64748b" />
+                  <Text className="text-slate-400 text-xs mt-2">Front Cover</Text>
+                </View>
+              )}
+            </TouchableOpacity>
+
+            {/* Back Cover */}
+            <TouchableOpacity 
+              onPress={() => openCamera('back')}
+              className="flex-1 bg-slate-800 rounded-lg overflow-hidden"
+              style={{ height: 150 }}
+            >
+              {backCoverUri ? (
+                <>
+                  <Image source={{ uri: backCoverUri }} className="w-full h-full" resizeMode="cover" />
+                  <View className="absolute top-2 right-2 bg-indigo-600 rounded-full p-2">
+                    <Ionicons name="camera" size={16} color="white" />
+                  </View>
+                </>
+              ) : (
+                <View className="flex-1 justify-center items-center">
+                  <Ionicons name="camera" size={40} color="#64748b" />
+                  <Text className="text-slate-400 text-xs mt-2">Back Cover</Text>
+                </View>
+              )}
+            </TouchableOpacity>
+          </View>
+        </View>
+
         {/* Title Input */}
         <View className="mb-4">
           <Text className="text-slate-400 text-sm mb-2">Book Title *</Text>
@@ -138,6 +239,63 @@ export default function EditBookScreen() {
           </Text>
         </TouchableOpacity>
       </ScrollView>
+
+      {/* Camera Modal */}
+      <Modal visible={cameraVisible} animationType="slide">
+        <View style={{ flex: 1, backgroundColor: 'black' }}>
+          {permission?.granted ? (
+            <>
+              <CameraView 
+                ref={cameraRef}
+                style={{ flex: 1, width: '100%', height: '100%' }}
+                facing="back"
+                mode="picture"
+                autofocus="on"
+              />
+              
+              <View className="absolute bottom-0 left-0 right-0 p-6 flex-row justify-between items-center">
+                <TouchableOpacity
+                  onPress={() => {
+                    setCameraVisible(false);
+                    setCurrentCover(null);
+                  }}
+                  className="bg-slate-800 p-4 rounded-full"
+                >
+                  <Ionicons name="close" size={24} color="white" />
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  onPress={takePicture}
+                  className="bg-indigo-600 p-6 rounded-full"
+                >
+                  <Ionicons name="camera" size={32} color="white" />
+                </TouchableOpacity>
+
+                <View style={{ width: 56 }} />
+              </View>
+            </>
+          ) : (
+            <View className="flex-1 justify-center items-center bg-slate-950 p-6">
+              <Ionicons name="camera-outline" size={64} color="#64748b" />
+              <Text className="text-white text-lg mt-4 text-center">
+                Camera permission required
+              </Text>
+              <TouchableOpacity
+                onPress={requestPermission}
+                className="bg-indigo-600 px-6 py-3 rounded-lg mt-4"
+              >
+                <Text className="text-white font-bold">Grant Permission</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => setCameraVisible(false)}
+                className="mt-4"
+              >
+                <Text className="text-slate-400">Cancel</Text>
+              </TouchableOpacity>
+            </View>
+          )}
+        </View>
+      </Modal>
     </View>
   );
 }

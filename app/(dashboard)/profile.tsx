@@ -1,8 +1,10 @@
 import { Ionicons } from '@expo/vector-icons';
+import * as ImagePicker from 'expo-image-picker';
 import { router } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import {
     Alert,
+    Image,
     ScrollView,
     Text,
     TouchableOpacity,
@@ -15,6 +17,7 @@ import { BookService } from '../../services/bookService';
 export default function ProfileScreen() {
   const { user, logout } = useAuth();
   const { showLoader, hideLoader } = useLoader();
+  const [profilePhotoUri, setProfilePhotoUri] = useState<string | null>(null);
   const [stats, setStats] = useState({
     total: 0,
     reading: 0,
@@ -23,8 +26,10 @@ export default function ProfileScreen() {
   });
 
   useEffect(() => {
-    loadStats();
-  }, []);
+    if (user) {
+      loadStats();
+    }
+  }, [user]);
 
   const loadStats = async () => {
     if (!user) return;
@@ -37,6 +42,24 @@ export default function ProfileScreen() {
       console.error('Failed to load stats:', error.message);
     } finally {
       hideLoader();
+    }
+  };
+
+  const pickImage = async () => {
+    try {
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ['images'],
+        allowsEditing: true,
+        aspect: [1, 1],
+        quality: 0.8,
+      });
+
+      if (!result.canceled && result.assets[0]) {
+        setProfilePhotoUri(result.assets[0].uri);
+      }
+    } catch (error) {
+      console.error('Error picking image:', error);
+      Alert.alert('Error', 'Failed to pick image');
     }
   };
 
@@ -74,11 +97,24 @@ export default function ProfileScreen() {
         <View className="bg-slate-900 rounded-xl p-6 mb-6">
           {/* Avatar */}
           <View className="items-center mb-4">
-            <View className="w-24 h-24 bg-indigo-600 rounded-full items-center justify-center">
-              <Text className="text-white text-4xl font-bold">
-                {user.displayName?.charAt(0).toUpperCase() || 'U'}
-              </Text>
-            </View>
+            <TouchableOpacity onPress={pickImage}>
+              <View className="w-24 h-24 bg-indigo-600 rounded-full items-center justify-center overflow-hidden">
+                {profilePhotoUri ? (
+                  <Image 
+                    source={{ uri: profilePhotoUri }} 
+                    className="w-full h-full"
+                    resizeMode="cover"
+                  />
+                ) : (
+                  <Text className="text-white text-4xl font-bold">
+                    {user.displayName?.charAt(0).toUpperCase() || 'U'}
+                  </Text>
+                )}
+              </View>
+              <View className="absolute bottom-0 right-0 bg-indigo-600 rounded-full p-2 border-2 border-slate-900">
+                <Ionicons name="camera" size={16} color="white" />
+              </View>
+            </TouchableOpacity>
           </View>
 
           {/* Name */}
