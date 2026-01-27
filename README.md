@@ -1,6 +1,6 @@
-#  BookMate 
+# 📸 BookMate - Camera App
 
-BookMate is a simple mobile application designed to help users manage their personal reading list. With this app, users can keep track of books they are currently reading, plan to read, or have already finished. Each book entry includes the title, author, and reading status. Users can easily add new books, update existing entries, view book details, and delete books they no longer want to track. The app includes secure user authentication, ensuring that each user’s book library is private. The main screens of the app include a login/signup screen, a dashboard showing all books, an add book screen, an edit book screen, a book details page, and a profile/settings screen.
+A modern, feature-rich camera application built with React Native and Expo, featuring photo capture, gallery integration, and a beautiful dark theme UI. Powered by Firebase for authentication and data storage.
 
 ## ✨ Features
 
@@ -31,6 +31,7 @@ BookMate is a simple mobile application designed to help users manage their pers
 - **Icons:** [@expo/vector-icons](https://icons.expo.fyi/) ^15.0.3
 - **Camera:** [expo-camera](https://docs.expo.dev/versions/latest/sdk/camera/) ~17.0.10
 - **Media Library:** [expo-media-library](https://docs.expo.dev/versions/latest/sdk/media-library/) ~18.2.1
+- **Backend:** [Firebase](https://firebase.google.com/) - Authentication, Firestore, Storage
 
 ## 📦 Dependencies
 
@@ -43,7 +44,12 @@ BookMate is a simple mobile application designed to help users manage their pers
   "nativewind": "^4.2.1",
   "react": "19.1.0",
   "react-native": "0.81.5",
-  "typescript": "~5.9.2"
+  "typescript": "~5.9.2",
+  "firebase": "^9.x.x",
+  "@react-native-firebase/app": "^18.x.x",
+  "@react-native-firebase/auth": "^18.x.x",
+  "@react-native-firebase/firestore": "^18.x.x",
+  "@react-native-firebase/storage": "^18.x.x"
 }
 ```
 
@@ -79,6 +85,11 @@ BookMate is a simple mobile application designed to help users manage their pers
    - Scan the QR code with Expo Go app (Android) or Camera app (iOS)
    - Or press `a` for Android emulator
    - Or press `i` for iOS simulator
+
+5. **Firebase Setup (Optional)**
+   - See [FIREBASE_SETUP.md](./FIREBASE_SETUP.md) for detailed Firebase integration instructions
+   - Download `google-services.json` from Firebase Console
+   - Add Firebase credentials to `.env` file
 
 ## 📱 Available Scripts
 
@@ -136,7 +147,18 @@ bookMate/
 - **Accent:** Indigo with shadow effects
 - **UI Style:** Modern, minimalist, dark theme
 
-## 📝 License
+## � Firebase Integration
+
+BookMate uses Firebase for:
+
+- **Authentication** - Secure user login and registration
+- **Firestore** - Cloud database for storing photos and metadata
+- **Storage** - Cloud storage for photo files
+- **Security Rules** - Protected data access and privacy
+
+For detailed Firebase setup instructions, see [FIREBASE_SETUP.md](./FIREBASE_SETUP.md)
+
+## �📝 License
 
 This project is open source and available for personal and educational use.
 

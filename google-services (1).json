@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "555256137272",
+    "project_id": "book-52c43",
+    "storage_bucket": "book-52c43.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:555256137272:android:99b185d0c632bbc0e148cd",
+        "android_client_info": {
+          "package_name": "com.ahasna.bookmate"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "555256137272-f1bv28j7bn5r9jcm9naqqhosi5had0l5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCIlPnd2_LnTjOOfoN1W6rKLOwy0IsR-wI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "555256137272-f1bv28j7bn5r9jcm9naqqhosi5had0l5.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
