@@ -1,32 +1,18 @@
-import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import {
     AuthError,
     createUserWithEmailAndPassword,
-    GoogleAuthProvider,
-    signInWithCredential,
-    signInWithEmailAndPassword,
     signOut,
-    User,
+    User
 } from 'firebase/auth';
-import { addDoc, collection, doc, getDoc, getDocs, query, setDoc, where } from 'firebase/firestore';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { auth, db as firestore } from './firebase';
 
 export interface UserProfile {
   uid: string;
   email: string;
   displayName?: string;
-  profilePicture?: string;
   createdAt: Date;
   updatedAt: Date;
-}
-
-export interface Photo {
-  id: string;
-  uid: string;
-  photoUri: string;
-  timestamp: Date;
-  title?: string;
-  description?: string;
 }
 
 export class AuthService {
@@ -52,78 +38,6 @@ export class AuthService {
 
       await setDoc(doc(firestore, 'users', user.uid), userProfile);
 
-      return user;
-    } catch (error) {
-      const authError = error as AuthError;
-      throw new Error(this.getErrorMessage(authError.code));
-    }
-  }
-
-  /**
-   * Login with Google
-   */
-  static async loginWithGoogle(): Promise<User> {
-    try {
-      // Initialize Google Sign-In
-      GoogleSignin.configure({
-        webClientId: '555256137272-6f8kl5c7v2m8h4j6n9p3q5r7t9u1v3w5.apps.googleusercontent.com',
-        offlineAccess: true,
-      });
-
-      // Sign in with Google
-      await GoogleSignin.signIn();
-
-      // Get the ID token
-      const tokens = await GoogleSignin.getTokens();
-      const credential = GoogleAuthProvider.credential(tokens.idToken);
-
-      // Sign in with Firebase
-      const { user } = await signInWithCredential(auth, credential);
-
-      // Check if user profile exists, if not create it
-      const userProfile = await this.getUserProfile(user.uid);
-      if (!userProfile) {
-        const newUserProfile: UserProfile = {
-          uid: user.uid,
-          email: user.email || '',
-          displayName: user.displayName || 'Google User',
-          profilePicture: user.photoURL || undefined,
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        };
-        await setDoc(doc(firestore, 'users', user.uid), newUserProfile);
-      }
-
-      return user;
-    } catch (error) {
-      const authError = error as AuthError;
-      throw new Error(
-        authError.code 
-          ? this.getErrorMessage(authError.code)
-          : 'Google sign-in failed. Please try again.'
-      );
-    }
-  }
-
-  /**
-   * Logout from Google
-   */
-  static async logoutGoogle(): Promise<void> {
-    try {
-      await GoogleSignin.signOut();
-      await signOut(auth);
-    } catch (error) {
-      const authError = error as AuthError;
-      throw new Error(this.getErrorMessage(authError.code));
-    }
-  }
-
-  /**
-   * Login with email and password
-   */
-  static async login(email: string, password: string): Promise<User> {
-    try {
-      const { user } = await signInWithEmailAndPassword(auth, email, password);
       return user;
     } catch (error) {
       const authError = error as AuthError;
@@ -176,59 +90,6 @@ export class AuthService {
     } catch (error) {
       console.error('Error updating user profile:', error);
       throw error;
-    }
-  }
-
-  /**
-   * Save a photo to Firestore
-   */
-  static async savePhoto(
-    uid: string,
-    photoUri: string,
-    title?: string,
-    description?: string
-  ): Promise<Photo> {
-    try {
-      const photosCollection = collection(firestore, 'photos');
-      const docRef = await addDoc(photosCollection, {
-        uid,
-        photoUri,
-        title: title || 'Untitled Photo',
-        description: description || '',
-        timestamp: new Date(),
-      });
-
-      return {
-        id: docRef.id,
-        uid,
-        photoUri,
-        title: title || 'Untitled Photo',
-        description: description || '',
-        timestamp: new Date(),
-      };
-    } catch (error) {
-      console.error('Error saving photo:', error);
-      throw error;
-    }
-  }
-
-  /**
-   * Get all photos for a user
-   */
-  static async getUserPhotos(uid: string): Promise<Photo[]> {
-    try {
-      const photosCollection = collection(firestore, 'photos');
-      const q = query(photosCollection, where('uid', '==', uid));
-      const querySnapshot = await getDocs(q);
-
-      return querySnapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-        timestamp: doc.data().timestamp.toDate(),
-      } as Photo));
-    } catch (error) {
-      console.error('Error getting user photos:', error);
-      return [];
     }
   }
 

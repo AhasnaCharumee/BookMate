@@ -27,18 +27,6 @@ export default function LoginScreen() {
     }
   };
 
-  const handleGoogleLogin = async () => {
-    showLoader();
-    try {
-      await AuthService.loginWithGoogle();
-      // Navigation will happen automatically through AuthContext
-    } catch (error: any) {
-      Alert.alert('Google Sign-In Failed', error.message);
-    } finally {
-      hideLoader();
-    }
-  };
-
   return (
     <View className="flex-1 bg-slate-950 justify-center px-6">
       {/* Header */}
@@ -84,24 +72,6 @@ export default function LoginScreen() {
         >
           <Text className="text-white text-center font-bold text-lg">
             Login
-          </Text>
-        </TouchableOpacity>
-
-        {/* Divider */}
-        <View className="flex-row items-center my-6">
-          <View className="flex-1 h-px bg-slate-700" />
-          <Text className="text-slate-400 mx-4">OR</Text>
-          <View className="flex-1 h-px bg-slate-700" />
-        </View>
-
-        {/* Google Login Button */}
-        <TouchableOpacity
-          className="bg-white p-4 rounded-lg flex-row items-center justify-center"
-          onPress={handleGoogleLogin}
-        >
-          <Ionicons name="logo-google" size={20} color="#1f2937" />
-          <Text className="text-slate-900 text-center font-bold text-lg ml-2">
-            Sign in with Google
           </Text>
         </TouchableOpacity>
 

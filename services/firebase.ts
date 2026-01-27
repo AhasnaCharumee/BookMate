@@ -18,6 +18,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 
 // Initialize Firebase Authentication
+// Persistence is handled by AuthContext with AsyncStorage
 export const auth = getAuth(app);
 
 export const db = getFirestore(app);
