@@ -39,11 +39,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
     // Listen to Firebase auth state changes
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+      console.log('Auth state changed:', firebaseUser ? `User: ${firebaseUser.email}` : 'No user');
       setUser(firebaseUser);
       
       if (firebaseUser) {
         try {
           await AsyncStorage.setItem('user', JSON.stringify(firebaseUser));
+          console.log('User saved to AsyncStorage');
         } catch (error) {
           console.error('Error storing user:', error);
         }

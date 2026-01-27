@@ -16,12 +16,15 @@ export default function LoginScreen() {
       return;
     }
 
+    console.log('Login attempt with:', email);
     showLoader();
     try {
-      await AuthService.login(email, password);
+      const user = await AuthService.login(email, password);
+      console.log('Login successful:', user.uid);
       // Navigation will happen automatically through AuthContext
     } catch (error: any) {
-      Alert.alert('Login Failed', error.message);
+      console.error('Login error:', error);
+      Alert.alert('Login Failed', error.message || 'An error occurred');
     } finally {
       hideLoader();
     }
