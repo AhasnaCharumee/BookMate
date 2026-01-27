@@ -1,9 +1,9 @@
 import { Stack } from "expo-router";
-import "../global.css";
+import { LoadingScreen } from "../components/LoadingScreen";
 import { AuthProvider } from "../contexts/AuthContext";
 import { LoaderProvider } from "../contexts/LoaderContext";
+import "../global.css";
 import { useAuth } from "../hooks/useAuth";
-import { LoadingScreen } from "../components/LoadingScreen";
 
 function RootLayoutNav() {
   const { isLoading, isAuthenticated } = useAuth();

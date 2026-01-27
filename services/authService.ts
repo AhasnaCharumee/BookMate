@@ -1,11 +1,11 @@
 import {
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-  signOut,
-  User,
-  AuthError,
+    AuthError,
+    createUserWithEmailAndPassword,
+    signInWithEmailAndPassword,
+    signOut,
+    User,
 } from 'firebase/auth';
-import { doc, setDoc, getDoc, collection, addDoc, query, where, getDocs } from 'firebase/firestore';
+import { addDoc, collection, doc, getDoc, getDocs, query, setDoc, where } from 'firebase/firestore';
 import { auth, firestore } from '../config/firebaseConfig';
 
 export interface UserProfile {
