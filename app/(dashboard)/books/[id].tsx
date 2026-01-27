@@ -3,6 +3,7 @@ import { router, useLocalSearchParams } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import {
     Alert,
+    Image,
     ScrollView,
     Text,
     TouchableOpacity,
@@ -113,6 +114,37 @@ export default function BookDetailsScreen() {
       </View>
 
       <ScrollView className="flex-1 px-6 pt-6">
+        {/* Book Covers */}
+        {(book.frontCoverUri || book.backCoverUri) && (
+          <View className="mb-4">
+            <Text className="text-slate-400 text-sm mb-2">Book Covers</Text>
+            <View className="flex-row gap-3">
+              {book.frontCoverUri && (
+                <View className="flex-1">
+                  <Image 
+                    source={{ uri: book.frontCoverUri }} 
+                    className="w-full rounded-lg"
+                    style={{ height: 200 }}
+                    resizeMode="cover"
+                  />
+                  <Text className="text-slate-400 text-xs text-center mt-1">Front Cover</Text>
+                </View>
+              )}
+              {book.backCoverUri && (
+                <View className="flex-1">
+                  <Image 
+                    source={{ uri: book.backCoverUri }} 
+                    className="w-full rounded-lg"
+                    style={{ height: 200 }}
+                    resizeMode="cover"
+                  />
+                  <Text className="text-slate-400 text-xs text-center mt-1">Back Cover</Text>
+                </View>
+              )}
+            </View>
+          </View>
+        )}
+
         {/* Book Card */}
         <View className="bg-slate-900 rounded-xl p-6 mb-4">
           {/* Title */}

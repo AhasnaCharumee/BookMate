@@ -17,6 +17,8 @@ export interface Book {
   author: string;
   status: 'reading' | 'completed' | 'to-read';
   userId: string;
+  frontCoverUri?: string;
+  backCoverUri?: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -25,6 +27,8 @@ export interface BookInput {
   title: string;
   author: string;
   status: 'reading' | 'completed' | 'to-read';
+  frontCoverUri?: string;
+  backCoverUri?: string;
 }
 
 export class BookService {
