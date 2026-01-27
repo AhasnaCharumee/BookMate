@@ -53,43 +53,36 @@ A modern, feature-rich camera application built with React Native and Expo, feat
 }
 ```
 
-## 🚀 Getting Started
+## 🚀 Quick Start
 
 ### Prerequisites
-- Node.js (v16 or higher)
-- npm or yarn
-- Expo CLI
-- iOS Simulator (for iOS development) or Android Studio (for Android development)
+- Node.js (v16+)
+- Firebase account
+- Expo Go app (for testing)
 
-### Installation
+### Setup (5 minutes)
 
-1. **Clone the repository**
+1. **Clone and install:**
    ```bash
    git clone https://github.com/AhasnaCharumee/BookMate.git
    cd BookMate
-   ```
-
-2. **Install dependencies**
-   ```bash
    npm install
    ```
 
-3. **Start the development server**
+2. **Configure Firebase:**
+   - Get credentials from [Firebase Console](https://console.firebase.google.com/)
+   - Update `.env` file with your values
+   - See [SETUP_GUIDE.md](./SETUP_GUIDE.md) for detailed steps
+
+3. **Run the app:**
    ```bash
    npm start
-   # or
-   npx expo start
+   # Scan QR code with Expo Go or Camera app
    ```
 
-4. **Run on your device**
-   - Scan the QR code with Expo Go app (Android) or Camera app (iOS)
-   - Or press `a` for Android emulator
-   - Or press `i` for iOS simulator
+📖 **[Complete Setup Guide →](./SETUP_GUIDE.md)**
 
-5. **Firebase Setup (Optional)**
-   - See [FIREBASE_SETUP.md](./FIREBASE_SETUP.md) for detailed Firebase integration instructions
-   - Download `google-services.json` from Firebase Console
-   - Add Firebase credentials to `.env` file
+## 📚 Documentation
 
 ## 📱 Available Scripts
 
@@ -100,44 +93,78 @@ A modern, feature-rich camera application built with React Native and Expo, feat
 - `npm run lint` - Run ESLint
 - `npm run reset-project` - Reset project to initial state
 
-## 🏗️ Project Structure
+## 🔒 Firebase Integration
+
+BookMate uses Firebase for:
+
+- **Authentication** - Secure user login and registration (with persistent sessions)
+- **Firestore** - Cloud database for storing user profiles and photos
+- **Storage** - Cloud storage for photo files
+- **Security Rules** - Encrypted data access and privacy
+
+### Security ⚠️
+- API keys are **never hardcoded** - stored in `.env` file
+- `.env` file is **not committed** to git
+- All sensitive files are in `.gitignore`
+- See [SECURITY.md](./SECURITY.md) for details
+
+## 📂 Project Structure
 
 ```
-bookMate/
-├── app/
-│   ├── _layout.tsx       # Root layout with navigation setup
-│   └── index.tsx         # Main camera screen
-├── components/
-│   ├── camera-view.tsx   # Camera component
-│   └── ui/               # Reusable UI components
-├── constants/
-│   └── theme.ts          # Theme colors and constants
-├── hooks/
-│   ├── use-color-scheme.ts
-│   └── use-theme-color.ts
-├── assets/
-│   └── images/           # App images and icons
-├── global.css            # Global Tailwind styles
-├── tailwind.config.js    # Tailwind configuration
-└── package.json          # Dependencies and scripts
+BookMate/
+├── app/                    # Expo Router screens
+│   ├── _layout.tsx        # Root layout with providers
+│   └── index.tsx          # Camera screen
+├── components/            # Reusable React components
+│   ├── LoadingScreen.tsx
+│   ├── camera-view.tsx
+│   └── ui/
+├── contexts/              # React Context providers
+│   ├── AuthContext.tsx    # Authentication state
+│   └── LoaderContext.tsx  # Loading state
+├── hooks/                 # Custom React hooks
+│   ├── useAuth.ts
+│   └── useLoader.ts
+├── services/              # Business logic
+│   └── authService.ts     # Firebase operations
+├── config/                # Configuration files
+│   └── firebaseConfig.ts  # Firebase setup
+├── constants/             # App constants
+├── .env.example           # Environment variables template
+├── SETUP_GUIDE.md         # First-time setup
+└── README.md              # This file
 ```
 
-## 🎯 Key Features Implementation
+## 🔄 Architecture
 
-### Camera Permissions
-- Graceful permission handling with user-friendly UI
-- Clear explanation of why permissions are needed
-- Easy-to-use grant permission buttons
+### State Management
+- **AuthContext** - Manages user authentication state
+- **LoaderContext** - Manages global loading indicators
+- **AsyncStorage** - Persists auth state across sessions
 
-### Photo Capture
-- High-quality photo capture (0.8 quality setting)
-- Instant photo preview after capture
-- Automatic save to device gallery
+### Services
+- **AuthService** - Firebase authentication operations
+- **Firestore** - User profiles and photo metadata
+- **Cloud Storage** - Photo file storage
 
-### Camera Controls
-- Toggle between front and back cameras
-- Close camera view
-- Capture photo button with visual feedback
+## ✅ Verification
+
+To verify everything is set up correctly:
+
+```bash
+# Check environment
+node -v  # Should be v16+
+npm -v
+
+# Check dependencies
+npm list
+
+# Run linter
+npm run lint
+
+# Start dev server
+npm start
+```
 
 ## 🎨 Design System
 
@@ -147,16 +174,19 @@ bookMate/
 - **Accent:** Indigo with shadow effects
 - **UI Style:** Modern, minimalist, dark theme
 
-## � Firebase Integration
+## 🆘 Troubleshooting
 
-BookMate uses Firebase for:
+**"Firebase: Error (auth/invalid-api-key)"**
+- Update `.env` with real Firebase credentials
+- Restart dev server: `npm start`
 
-- **Authentication** - Secure user login and registration
-- **Firestore** - Cloud database for storing photos and metadata
-- **Storage** - Cloud storage for photo files
-- **Security Rules** - Protected data access and privacy
+**"Cannot find module"**
+- Run `npm install` and restart
 
-For detailed Firebase setup instructions, see [FIREBASE_SETUP.md](./FIREBASE_SETUP.md)
+**"Blank screen"**
+- Clear cache: `npm start -c`
+
+See [SETUP_GUIDE.md](./SETUP_GUIDE.md#-troubleshooting) for more help.
 
 ## �📝 License
 
@@ -171,6 +201,14 @@ This project is open source and available for personal and educational use.
 
 - Built with [Expo](https://expo.dev/)
 - Styled with [NativeWind](https://www.nativewind.dev/)
+- Icons from [Expo Vector Icons](https://icons.expo.fyi/)
+- Backend powered by [Firebase](https://firebase.google.com/)
+
+---
+
+Made with ❤️ by Ahasna Charumee
+
+**[→ Get Started Now](./SETUP_GUIDE.md)**
 - Icons from [Expo Vector Icons](https://icons.expo.fyi/)
 
 ---
