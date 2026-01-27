@@ -2,6 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { User as FirebaseUser, onAuthStateChanged, signOut } from 'firebase/auth';
 import React, { createContext, ReactNode, useEffect, useState } from 'react';
 import { auth } from '../services/firebase';
+import { GoogleSignin } from '@react-native-google-signin/google-signin';
 
 export interface AuthContextType {
   user: FirebaseUser | null;
@@ -63,6 +64,15 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const logout = async () => {
     try {
+      // Try to sign out from Google
+      try {
+        await GoogleSignin.signOut();
+      } catch (error) {
+        // It's okay if Google sign-out fails
+        console.log('Not signed in with Google');
+      }
+      
+      // Sign out from Firebase
       await signOut(auth);
       await AsyncStorage.removeItem('user');
       setUser(null);

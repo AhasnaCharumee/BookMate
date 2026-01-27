@@ -18,7 +18,6 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 
 // Initialize Firebase Authentication
-// Note: For React Native, we use getAuth() which will use AsyncStorage automatically
 export const auth = getAuth(app);
 
 export const db = getFirestore(app);

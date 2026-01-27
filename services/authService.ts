@@ -4,9 +4,12 @@ import {
     signInWithEmailAndPassword,
     signOut,
     User,
+    GoogleAuthProvider,
+    signInWithCredential,
 } from 'firebase/auth';
 import { addDoc, collection, doc, getDoc, getDocs, query, setDoc, where } from 'firebase/firestore';
 import { auth, db as firestore } from './firebase';
+import { GoogleSignin } from '@react-native-google-signin/google-signin';
 
 export interface UserProfile {
   uid: string;
@@ -50,6 +53,68 @@ export class AuthService {
       await setDoc(doc(firestore, 'users', user.uid), userProfile);
 
       return user;
+    } catch (error) {
+      const authError = error as AuthError;
+      throw new Error(this.getErrorMessage(authError.code));
+    }
+  }
+
+  /**
+   * Login with Google
+   */
+  static async loginWithGoogle(): Promise<User> {
+    try {
+      // Initialize Google Sign-In
+      GoogleSignin.configure({
+        webClientId: '555256137272-6f8kl5c7v2m8h4j6n9p3q5r7t9u1v3w5.apps.googleusercontent.com',
+        offlineAccess: true,
+      });
+
+      // Check if user is already signed in
+      const isSignedIn = await GoogleSignin.isSignedIn();
+      if (!isSignedIn) {
+        await GoogleSignin.signIn();
+      }
+
+      // Get the ID token
+      const tokens = await GoogleSignin.getTokens();
+      const credential = GoogleAuthProvider.credential(tokens.idToken);
+
+      // Sign in with Firebase
+      const { user } = await signInWithCredential(auth, credential);
+
+      // Check if user profile exists, if not create it
+      const userProfile = await this.getUserProfile(user.uid);
+      if (!userProfile) {
+        const newUserProfile: UserProfile = {
+          uid: user.uid,
+          email: user.email || '',
+          displayName: user.displayName || 'Google User',
+          profilePicture: user.photoURL || undefined,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        };
+        await setDoc(doc(firestore, 'users', user.uid), newUserProfile);
+      }
+
+      return user;
+    } catch (error) {
+      const authError = error as AuthError;
+      throw new Error(
+        authError.code 
+          ? this.getErrorMessage(authError.code)
+          : 'Google sign-in failed. Please try again.'
+      );
+    }
+  }
+
+  /**
+   * Logout from Google
+   */
+  static async logoutGoogle(): Promise<void> {
+    try {
+      await GoogleSignin.signOut();
+      await signOut(auth);
     } catch (error) {
       const authError = error as AuthError;
       throw new Error(this.getErrorMessage(authError.code));

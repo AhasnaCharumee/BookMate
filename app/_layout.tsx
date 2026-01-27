@@ -6,7 +6,7 @@ import "../global.css";
 import { useAuth } from "../hooks/useAuth";
 
 function RootLayoutNav() {
-  const { isLoading, isAuthenticated } = useAuth();
+  const { isLoading } = useAuth();
 
   if (isLoading) {
     return <LoadingScreen />;
@@ -14,14 +14,9 @@ function RootLayoutNav() {
 
   return (
     <Stack screenOptions={{ headerShown: false }}>
-      {isAuthenticated ? (
-        <Stack.Screen name="index" />
-      ) : (
-        <>
-          {/* Auth screens would go here */}
-          <Stack.Screen name="index" />
-        </>
-      )}
+      <Stack.Screen name="index" />
+      <Stack.Screen name="(auth)" />
+      <Stack.Screen name="(dashboard)" />
     </Stack>
   );
 }
