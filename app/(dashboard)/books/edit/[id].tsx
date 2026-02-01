@@ -101,14 +101,18 @@ export default function EditBookScreen() {
 
     showLoader();
     try {
-      await BookService.updateBook(user.uid, id, {
+      // Build book data object without undefined values
+      const bookData: any = {
         title,
         author,
-        genre: genre || undefined,
         status,
-        frontCoverUri: frontCoverUri || undefined,
-        backCoverUri: backCoverUri || undefined,
-      });
+      };
+      
+      if (genre) bookData.genre = genre;
+      if (frontCoverUri) bookData.frontCoverUri = frontCoverUri;
+      if (backCoverUri) bookData.backCoverUri = backCoverUri;
+
+      await BookService.updateBook(user.uid, id, bookData);
       
       hideLoader();
       Alert.alert('Success', 'Book updated successfully!', [

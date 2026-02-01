@@ -107,15 +107,19 @@ export default function AddBookScreen() {
       console.log('Adding book:', { title, author, genre, description });
       console.log('User ID:', user.uid);
 
-      const bookId = await BookService.addBook(user.uid, {
+      // Build book data object without undefined values
+      const bookData: any = {
         title,
         author,
         status,
-        genre: genre || undefined,
-        description: description || undefined,
-        frontCoverUri: frontCoverUri || undefined,
-        backCoverUri: backCoverUri || undefined,
-      });
+      };
+      
+      if (genre) bookData.genre = genre;
+      if (description) bookData.description = description;
+      if (frontCoverUri) bookData.frontCoverUri = frontCoverUri;
+      if (backCoverUri) bookData.backCoverUri = backCoverUri;
+
+      const bookId = await BookService.addBook(user.uid, bookData);
 
       console.log('Book added successfully with ID:', bookId);
 
