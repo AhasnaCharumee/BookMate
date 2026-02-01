@@ -156,12 +156,12 @@ export default function EditBookScreen() {
         {/* Book Covers */}
         <View className="mb-4">
           <Text className="text-slate-400 text-sm mb-2">Book Covers (Tap to retake)</Text>
-          <View className="flex-row gap-3 mb-3">
-            {/* Front Cover */}
+          <View>
+            {/* Front Cover - Main */}
             <TouchableOpacity 
               onPress={() => openCamera('front')}
-              className="flex-1 bg-slate-800 rounded-lg overflow-hidden"
-              style={{ height: 150 }}
+              className="bg-slate-800 rounded-lg overflow-hidden mb-3"
+              style={{ height: 220 }}
             >
               {frontCoverUri ? (
                 <>
@@ -172,29 +172,29 @@ export default function EditBookScreen() {
                 </>
               ) : (
                 <View className="flex-1 justify-center items-center">
-                  <Ionicons name="camera" size={40} color="#64748b" />
-                  <Text className="text-slate-400 text-xs mt-2">Front Cover</Text>
+                  <Ionicons name="camera" size={48} color="#64748b" />
+                  <Text className="text-indigo-400 text-sm mt-2 font-semibold">Front Cover (Main)</Text>
                 </View>
               )}
             </TouchableOpacity>
 
-            {/* Back Cover */}
+            {/* Back Cover - Secondary */}
             <TouchableOpacity 
               onPress={() => openCamera('back')}
-              className="flex-1 bg-slate-800 rounded-lg overflow-hidden"
-              style={{ height: 150 }}
+              className="bg-slate-800 rounded-lg overflow-hidden"
+              style={{ height: 130 }}
             >
               {backCoverUri ? (
                 <>
                   <Image source={{ uri: backCoverUri }} className="w-full h-full" resizeMode="cover" />
                   <View className="absolute top-2 right-2 bg-indigo-600 rounded-full p-2">
-                    <Ionicons name="camera" size={16} color="white" />
+                    <Ionicons name="camera" size={14} color="white" />
                   </View>
                 </>
               ) : (
                 <View className="flex-1 justify-center items-center">
-                  <Ionicons name="camera" size={40} color="#64748b" />
-                  <Text className="text-slate-400 text-xs mt-2">Back Cover</Text>
+                  <Ionicons name="camera" size={32} color="#64748b" />
+                  <Text className="text-slate-400 text-xs mt-2">Back Cover (Optional)</Text>
                 </View>
               )}
             </TouchableOpacity>

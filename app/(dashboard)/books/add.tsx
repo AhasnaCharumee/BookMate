@@ -233,35 +233,35 @@ export default function AddBookScreen() {
         {/* Book Cover Photos */}
         <View className="mb-6">
           <Text className="text-slate-400 text-sm mb-2">Book Cover Photos (Optional)</Text>
-          <View className="flex-row gap-3">
-            {/* Front Cover */}
+          <View>
+            {/* Front Cover - Main */}
             <TouchableOpacity
-              className="flex-1 bg-slate-800 rounded-lg p-4 items-center justify-center"
-              style={{ height: 160 }}
+              className="bg-slate-800 rounded-lg p-4 items-center justify-center mb-3"
+              style={{ height: 240 }}
               onPress={() => openCamera('front')}
             >
               {frontCoverUri ? (
                 <Image source={{ uri: frontCoverUri }} className="w-full h-full rounded-lg" />
               ) : (
                 <View className="items-center">
-                  <Ionicons name="camera" size={32} color="#6366f1" />
-                  <Text className="text-slate-400 text-sm mt-2">Front Cover</Text>
+                  <Ionicons name="camera" size={40} color="#6366f1" />
+                  <Text className="text-indigo-400 text-sm mt-2 font-semibold">Front Cover (Main)</Text>
                 </View>
               )}
             </TouchableOpacity>
 
-            {/* Back Cover */}
+            {/* Back Cover - Secondary */}
             <TouchableOpacity
-              className="flex-1 bg-slate-800 rounded-lg p-4 items-center justify-center"
-              style={{ height: 160 }}
+              className="bg-slate-800 rounded-lg p-4 items-center justify-center"
+              style={{ height: 140 }}
               onPress={() => openCamera('back')}
             >
               {backCoverUri ? (
                 <Image source={{ uri: backCoverUri }} className="w-full h-full rounded-lg" />
               ) : (
                 <View className="items-center">
-                  <Ionicons name="camera" size={32} color="#6366f1" />
-                  <Text className="text-slate-400 text-sm mt-2">Back Cover</Text>
+                  <Ionicons name="camera" size={28} color="#6366f1" />
+                  <Text className="text-slate-400 text-xs mt-2">Back Cover (Optional)</Text>
                 </View>
               )}
             </TouchableOpacity>
