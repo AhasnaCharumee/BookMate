@@ -35,7 +35,7 @@ export default function LoginScreen() {
     <View className="flex-1 bg-slate-950 justify-center px-6">
       {/* Header */}
       <View className="items-center mb-12">
-        <Ionicons name="book" size={64} color="#6366f1" />
+        <Ionicons name="book" size={64} color="#10b981" />
         <Text className="text-white text-3xl font-bold mt-4">BookMate</Text>
         <Text className="text-slate-400 text-base mt-2">Welcome back!</Text>
       </View>
@@ -71,7 +71,7 @@ export default function LoginScreen() {
 
         {/* Login Button */}
         <TouchableOpacity
-          className="bg-indigo-600 p-4 rounded-lg mt-6"
+          className="bg-emerald-600 p-4 rounded-lg mt-6"
           onPress={handleLogin}
         >
           <Text className="text-white text-center font-bold text-lg">
@@ -83,7 +83,7 @@ export default function LoginScreen() {
         <View className="flex-row justify-center mt-6">
           <Text className="text-slate-400">Don't have an account? </Text>
           <TouchableOpacity onPress={() => router.push('/(auth)/register')}>
-            <Text className="text-indigo-400 font-bold">Sign Up</Text>
+            <Text className="text-emerald-400 font-bold">Sign Up</Text>
           </TouchableOpacity>
         </View>
       </View>

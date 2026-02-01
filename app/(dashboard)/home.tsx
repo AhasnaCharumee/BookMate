@@ -3,12 +3,12 @@ import { useFocusEffect } from '@react-navigation/native';
 import { router } from 'expo-router';
 import React, { useCallback, useEffect, useState } from 'react';
 import {
-    Alert,
-    FlatList,
-    Image,
-    Text,
-    TouchableOpacity,
-    View,
+  Alert,
+  FlatList,
+  Image,
+  Text,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 import { useAuth } from '../../hooks/useAuth';
 import { useLoader } from '../../hooks/useLoader';
@@ -124,7 +124,7 @@ export default function HomeScreen() {
           <View className="flex-row gap-2">
             <TouchableOpacity
               onPress={() => router.push(`/(dashboard)/books/edit/${item.id}`)}
-              className="bg-indigo-600 p-2 rounded-lg"
+              className="bg-emerald-600 p-2 rounded-lg"
             >
               <Ionicons name="pencil" size={20} color="white" />
             </TouchableOpacity>

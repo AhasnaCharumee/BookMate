@@ -3,14 +3,14 @@ import { CameraView, useCameraPermissions } from 'expo-camera';
 import { router } from 'expo-router';
 import React, { useRef, useState } from 'react';
 import {
-    Alert,
-    Image,
-    Modal,
-    ScrollView,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
+  Alert,
+  Image,
+  Modal,
+  ScrollView,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 import GenreDropdown from '../../../components/genre-dropdown';
 import { useAuth } from '../../../hooks/useAuth';
@@ -163,7 +163,7 @@ export default function AddBookScreen() {
       onPress={() => setStatus(value)}
       className={`flex-1 p-3 rounded-lg border-2 ${
         status === value 
-          ? 'bg-indigo-600 border-indigo-600' 
+          ? 'bg-emerald-600 border-emerald-600' 
           : 'bg-transparent border-slate-600'
       }`}
     >
@@ -191,7 +191,7 @@ export default function AddBookScreen() {
         {/* Required Fields Info */}
         <View className="mb-6 bg-slate-800 rounded-lg p-3">
           <Text className="text-slate-300 text-xs">
-            <Text className="text-indigo-400 font-semibold">*</Text> = Required field
+            <Text className="text-emerald-400 font-semibold">*</Text> = Required field
           </Text>
         </View>
 
@@ -264,8 +264,8 @@ export default function AddBookScreen() {
                 <Image source={{ uri: frontCoverUri }} className="w-full h-full rounded-lg" />
               ) : (
                 <View className="items-center">
-                  <Ionicons name="camera" size={40} color="#6366f1" />
-                  <Text className="text-indigo-400 text-sm mt-2 font-semibold">Front Cover (Main)</Text>
+                  <Ionicons name="camera" size={40} color="#10b981" />
+                  <Text className="text-emerald-400 text-sm mt-2 font-semibold">Front Cover (Main)</Text>
                 </View>
               )}
             </TouchableOpacity>
@@ -280,7 +280,7 @@ export default function AddBookScreen() {
                 <Image source={{ uri: backCoverUri }} className="w-full h-full rounded-lg" />
               ) : (
                 <View className="items-center">
-                  <Ionicons name="camera" size={28} color="#6366f1" />
+                  <Ionicons name="camera" size={28} color="#10b981" />
                   <Text className="text-slate-400 text-xs mt-2">Back Cover (Optional)</Text>
                 </View>
               )}
@@ -290,7 +290,7 @@ export default function AddBookScreen() {
 
         {/* Add Button */}
         <TouchableOpacity
-          className="bg-indigo-600 p-4 rounded-lg mb-6"
+          className="bg-emerald-600 p-4 rounded-lg mb-6"
           onPress={handleAddBook}
         >
           <Text className="text-white text-center font-bold text-lg">
@@ -344,7 +344,7 @@ export default function AddBookScreen() {
                   <TouchableOpacity
                     onPress={takePicture}
                     style={{ 
-                      backgroundColor: '#6366f1', 
+                      backgroundColor: '#10b981', 
                       borderRadius: 9999, 
                       padding: 24 
                     }}
@@ -368,7 +368,7 @@ export default function AddBookScreen() {
             </>
           ) : (
             <View className="flex-1 justify-center items-center px-6 bg-slate-950">
-              <Ionicons name="camera-outline" size={64} color="#6366f1" />
+              <Ionicons name="camera-outline" size={64} color="#10b981" />
               <Text className="text-white text-center text-lg mt-4 mb-6 font-semibold">
                 Camera Permission Required
               </Text>
@@ -382,7 +382,7 @@ export default function AddBookScreen() {
                     // Permission granted, keep modal open for retake
                   }
                 }}
-                className="bg-indigo-600 px-8 py-3 rounded-lg mb-4"
+                className="bg-emerald-600 px-8 py-3 rounded-lg mb-4"
               >
                 <Text className="text-white font-bold">Grant Permission</Text>
               </TouchableOpacity>

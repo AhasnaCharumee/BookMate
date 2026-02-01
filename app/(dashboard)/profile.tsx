@@ -103,7 +103,7 @@ export default function ProfileScreen() {
           {/* Avatar */}
           <View className="items-center mb-4">
             <TouchableOpacity onPress={pickImage}>
-              <View className="w-24 h-24 bg-indigo-600 rounded-full items-center justify-center overflow-hidden">
+              <View className="w-24 h-24 bg-emerald-600 rounded-full items-center justify-center overflow-hidden">
                 {profilePhotoUri ? (
                   <Image 
                     source={{ uri: profilePhotoUri }} 
@@ -116,7 +116,7 @@ export default function ProfileScreen() {
                   </Text>
                 )}
               </View>
-              <View className="absolute bottom-0 right-0 bg-indigo-600 rounded-full p-2 border-2 border-slate-900">
+              <View className="absolute bottom-0 right-0 bg-emerald-600 rounded-full p-2 border-2 border-slate-900">
                 <Ionicons name="camera" size={16} color="white" />
               </View>
             </TouchableOpacity>

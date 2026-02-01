@@ -81,7 +81,7 @@ export default function SearchScreen() {
 
         {/* Search Button */}
         <TouchableOpacity
-          className="bg-indigo-600 p-4 rounded-lg mb-4"
+          className="bg-emerald-600 p-4 rounded-lg mb-4"
           onPress={handleSearch}
         >
           <Text className="text-white text-center font-bold text-lg">

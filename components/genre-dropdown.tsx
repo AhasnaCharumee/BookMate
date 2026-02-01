@@ -78,16 +78,16 @@ export default function GenreDropdown({ value, onSelect }: GenreDropdownProps) {
                       setIsOpen(false);
                     }}
                     className={`px-6 py-4 border-b border-slate-700 flex-row items-center justify-between ${
-                      value === genre ? 'bg-indigo-600/20' : 'bg-slate-800'
+                      value === genre ? 'bg-emerald-600/20' : 'bg-slate-800'
                     }`}
                   >
                     <Text className={`text-base ${
-                      value === genre ? 'text-indigo-400 font-semibold' : 'text-white'
+                      value === genre ? 'text-emerald-400 font-semibold' : 'text-white'
                     }`}>
                       {genre}
                     </Text>
                     {value === genre && (
-                      <Ionicons name="checkmark" size={20} color="#6366f1" />
+                      <Ionicons name="checkmark" size={20} color="#10b981" />
                     )}
                   </TouchableOpacity>
                 ))}

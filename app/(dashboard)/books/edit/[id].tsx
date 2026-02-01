@@ -3,14 +3,14 @@ import { CameraView, useCameraPermissions } from 'expo-camera';
 import { router, useLocalSearchParams } from 'expo-router';
 import React, { useEffect, useRef, useState } from 'react';
 import {
-    Alert,
-    Image,
-    Modal,
-    ScrollView,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
+  Alert,
+  Image,
+  Modal,
+  ScrollView,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 import GenreDropdown from '../../../../components/genre-dropdown';
 import { useAuth } from '../../../../hooks/useAuth';
@@ -132,7 +132,7 @@ export default function EditBookScreen() {
       onPress={() => setStatus(value)}
       className={`flex-1 p-3 rounded-lg border-2 ${
         status === value 
-          ? 'bg-indigo-600 border-indigo-600' 
+          ? 'bg-emerald-600 border-emerald-600' 
           : 'bg-transparent border-slate-600'
       }`}
     >
@@ -160,7 +160,7 @@ export default function EditBookScreen() {
         {/* Required Fields Info */}
         <View className="mb-6 bg-slate-800 rounded-lg p-3">
           <Text className="text-slate-300 text-xs">
-            <Text className="text-indigo-400 font-semibold">*</Text> = Required field
+            <Text className="text-emerald-400 font-semibold">*</Text> = Required field
           </Text>
         </View>
 
@@ -177,14 +177,14 @@ export default function EditBookScreen() {
               {frontCoverUri ? (
                 <>
                   <Image source={{ uri: frontCoverUri }} className="w-full h-full" resizeMode="cover" />
-                  <View className="absolute top-2 right-2 bg-indigo-600 rounded-full p-2">
+                  <View className="absolute top-2 right-2 bg-emerald-600 rounded-full p-2">
                     <Ionicons name="camera" size={16} color="white" />
                   </View>
                 </>
               ) : (
                 <View className="flex-1 justify-center items-center">
                   <Ionicons name="camera" size={48} color="#64748b" />
-                  <Text className="text-indigo-400 text-sm mt-2 font-semibold">Front Cover (Main)</Text>
+                  <Text className="text-emerald-400 text-sm mt-2 font-semibold">Front Cover (Main)</Text>
                 </View>
               )}
             </TouchableOpacity>
@@ -198,7 +198,7 @@ export default function EditBookScreen() {
               {backCoverUri ? (
                 <>
                   <Image source={{ uri: backCoverUri }} className="w-full h-full" resizeMode="cover" />
-                  <View className="absolute top-2 right-2 bg-indigo-600 rounded-full p-2">
+                  <View className="absolute top-2 right-2 bg-emerald-600 rounded-full p-2">
                     <Ionicons name="camera" size={14} color="white" />
                   </View>
                 </>
@@ -254,7 +254,7 @@ export default function EditBookScreen() {
 
         {/* Update Button */}
         <TouchableOpacity
-          className="bg-indigo-600 p-4 rounded-lg"
+          className="bg-emerald-600 p-4 rounded-lg"
           onPress={handleUpdateBook}
         >
           <Text className="text-white text-center font-bold text-lg">
@@ -289,7 +289,7 @@ export default function EditBookScreen() {
 
                 <TouchableOpacity
                   onPress={takePicture}
-                  className="bg-indigo-600 p-6 rounded-full"
+                  className="bg-emerald-600 p-6 rounded-full"
                 >
                   <Ionicons name="camera" size={32} color="white" />
                 </TouchableOpacity>
@@ -305,7 +305,7 @@ export default function EditBookScreen() {
               </Text>
               <TouchableOpacity
                 onPress={requestPermission}
-                className="bg-indigo-600 px-6 py-3 rounded-lg mt-4"
+                className="bg-emerald-600 px-6 py-3 rounded-lg mt-4"
               >
                 <Text className="text-white font-bold">Grant Permission</Text>
               </TouchableOpacity>

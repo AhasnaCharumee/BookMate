@@ -103,7 +103,7 @@ export default function BookDetailsScreen() {
             </Text>
           </View>
           <View className="flex-row gap-2">
-            <TouchableOpacity onPress={handleEdit} className="bg-indigo-600 p-2 rounded-lg">
+            <TouchableOpacity onPress={handleEdit} className="bg-emerald-600 p-2 rounded-lg">
               <Ionicons name="pencil" size={20} color="white" />
             </TouchableOpacity>
             <TouchableOpacity onPress={handleDelete} className="bg-red-600 p-2 rounded-lg">

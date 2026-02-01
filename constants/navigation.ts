@@ -47,7 +47,7 @@ export const ICON_SIZES = {
 export const TAB_BAR_CONFIG = {
   height: 60,
   iconSize: 24,
-  activeColor: '#6366f1', // indigo-600
+  activeColor: '#10b981', // emerald-600
   inactiveColor: '#64748b', // slate-500
   backgroundColor: '#1e293b', // slate-900
 } as const;

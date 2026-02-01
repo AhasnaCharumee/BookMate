@@ -88,7 +88,7 @@ export default function LibraryScreen() {
       onPress={() => setFilter(value)}
       style={{ paddingHorizontal: 10, paddingVertical: 4, height: 24, borderRadius: 12 }}
       className={`flex-row items-center justify-center ${
-        filter === value ? 'bg-indigo-600' : 'bg-slate-800'
+        filter === value ? 'bg-emerald-600' : 'bg-slate-800'
       }`}
     >
       <Text 
@@ -142,7 +142,7 @@ export default function LibraryScreen() {
               </Text>
               <TouchableOpacity
                 onPress={() => router.push('/(dashboard)/books/add')}
-                className="bg-indigo-600 px-6 py-3 rounded-lg mt-4"
+                className="bg-emerald-600 px-6 py-3 rounded-lg mt-4"
               >
                 <Text className="text-white font-bold">Add Your First Book</Text>
               </TouchableOpacity>
