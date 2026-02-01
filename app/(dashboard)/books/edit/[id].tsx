@@ -126,12 +126,14 @@ export default function EditBookScreen() {
   const StatusButton = ({ value, label }: { value: typeof status; label: string }) => (
     <TouchableOpacity
       onPress={() => setStatus(value)}
-      className={`flex-1 p-3 rounded-lg ${
-        status === value ? 'bg-indigo-600' : 'bg-slate-800'
+      className={`flex-1 p-3 rounded-lg border-2 ${
+        status === value 
+          ? 'bg-indigo-600 border-indigo-600' 
+          : 'bg-transparent border-slate-600'
       }`}
     >
       <Text className={`text-center font-bold ${
-        status === value ? 'text-white' : 'text-slate-400'
+        status === value ? 'text-white' : 'text-slate-300'
       }`}>
         {label}
       </Text>
