@@ -82,7 +82,7 @@ export default function LibraryScreen() {
       }`}
     >
       <Text 
-        style={{ fontSize: 10 }}
+        style={{ fontSize: 15 }}
         className={`font-medium ${
           filter === value ? 'text-white' : 'text-slate-400'
         }`}
