@@ -1,8 +1,15 @@
-import { Tabs } from 'expo-router';
+import { Tabs, usePathname } from 'expo-router';
 import { IconSymbol } from '../../components/ui/icon-symbol';
 import { NAVIGATION_ROUTES, TAB_BAR_CONFIG } from '../../constants/navigation';
 
 export default function DashboardLayout() {
+  const pathname = usePathname();
+  
+  // Hide tab bar on form pages
+  const isFormPage = pathname.includes('/books/add') || 
+                     pathname.includes('/books/edit/') ||
+                     pathname.includes('/books/');
+  
   return (
     <Tabs
       screenOptions={{
@@ -26,6 +33,7 @@ export default function DashboardLayout() {
           shadowOffset: { width: 0, height: -2 },
           shadowOpacity: 0.25,
           shadowRadius: 8,
+          display: isFormPage ? 'none' : 'flex',
         },
         tabBarLabelStyle: {
           fontSize: 12,
