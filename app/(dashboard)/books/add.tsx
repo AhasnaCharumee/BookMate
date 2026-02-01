@@ -12,6 +12,7 @@ import {
     TouchableOpacity,
     View,
 } from 'react-native';
+import GenreDropdown from '../../../components/genre-dropdown';
 import { useAuth } from '../../../hooks/useAuth';
 import { useLoader } from '../../../hooks/useLoader';
 import { BookService } from '../../../services/bookService';
@@ -196,16 +197,10 @@ export default function AddBookScreen() {
           />
         </View>
 
-        {/* Genre Input */}
+        {/* Genre Dropdown */}
         <View className="mb-4">
           <Text className="text-slate-400 text-sm mb-2">Genre</Text>
-          <TextInput
-            className="bg-slate-800 text-white p-4 rounded-lg"
-            placeholder="e.g., Fiction, Science, Mystery"
-            placeholderTextColor="#64748b"
-            value={genre}
-            onChangeText={setGenre}
-          />
+          <GenreDropdown value={genre} onSelect={setGenre} />
         </View>
 
         {/* Description Input */}

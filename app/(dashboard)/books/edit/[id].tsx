@@ -12,6 +12,7 @@ import {
     TouchableOpacity,
     View,
 } from 'react-native';
+import GenreDropdown from '../../../../components/genre-dropdown';
 import { useAuth } from '../../../../hooks/useAuth';
 import { useLoader } from '../../../../hooks/useLoader';
 import { BookService } from '../../../../services/bookService';
@@ -22,6 +23,7 @@ export default function EditBookScreen() {
   const { showLoader, hideLoader } = useLoader();
   const [title, setTitle] = useState('');
   const [author, setAuthor] = useState('');
+  const [genre, setGenre] = useState('');
   const [status, setStatus] = useState<'reading' | 'completed' | 'to-read'>('to-read');
   const [frontCoverUri, setFrontCoverUri] = useState<string | null>(null);
   const [backCoverUri, setBackCoverUri] = useState<string | null>(null);
@@ -42,6 +44,7 @@ export default function EditBookScreen() {
       const book = await BookService.getBook(user.uid, id);
       setTitle(book.title);
       setAuthor(book.author);
+      setGenre(book.genre || '');
       setStatus(book.status);
       setFrontCoverUri(book.frontCoverUri || null);
       setBackCoverUri(book.backCoverUri || null);
@@ -101,6 +104,7 @@ export default function EditBookScreen() {
       await BookService.updateBook(user.uid, id, {
         title,
         author,
+        genre: genre || undefined,
         status,
         frontCoverUri: frontCoverUri || undefined,
         backCoverUri: backCoverUri || undefined,
@@ -217,6 +221,12 @@ export default function EditBookScreen() {
             value={author}
             onChangeText={setAuthor}
           />
+        </View>
+
+        {/* Genre Dropdown */}
+        <View className="mb-4">
+          <Text className="text-slate-400 text-sm mb-2">Genre</Text>
+          <GenreDropdown value={genre} onSelect={setGenre} />
         </View>
 
         {/* Status Selection */}
