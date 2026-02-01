@@ -144,8 +144,8 @@ export default function EditBookScreen() {
     <View className="flex-1 bg-slate-950">
       {/* Header */}
       <View className="bg-slate-900 px-6 pt-12 pb-6">
-        <View className="flex-row items-center">
-          <TouchableOpacity onPress={() => router.back()} className="mr-4">
+        <View className="flex-row items-center justify-center">
+          <TouchableOpacity onPress={() => router.back()} className="absolute left-6">
             <Ionicons name="arrow-back" size={24} color="white" />
           </TouchableOpacity>
           <Text className="text-white text-2xl font-bold">Edit Book</Text>
