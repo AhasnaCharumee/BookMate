@@ -25,26 +25,29 @@ A beautiful, feature-rich book management application built with **React Native*
 - **To-Read List** - Keep track of your wishlist
 
 ### 🔐 Authentication
-- **Email/Password Login** - Secure authentication with email and password
+- **Email/Password Authentication** - Secure login and registration with email and password
 - **Fast Login** - Optimized auth with immediate navigation and proper loader management
 - **Auto Persistence** - User sessions are saved with AsyncStorage (Firebase + Custom)
 - **Secure Logout** - One-tap logout with session cleanup
 
 ### 👤 User Profile
-- **Profile Dashboard** - View your profile with customizable photo
+- **Profile Dashboard** - View your profile with customizable avatar
+- **Avatar Selection** - Choose from 8 pre-made icon avatars (Book, Glasses, Person, Heart, Star, Planet, Rocket, Coffee)
 - **Reading Statistics** - See your reading metrics at a glance
-- **Profile Photo** - Add and update your profile picture from gallery
 - **Account Management** - Manage your account settings
 - **Secure Logout** - Easy logout button with confirmation
 
 ### 🎨 Modern UI/UX
-- **Dark Theme** - Sleek dark mode with indigo accents
+- **Emerald Theme** - Sleek dark mode with emerald-teal accents (#10b981)
 - **Responsive Design** - Optimized for all screen sizes
 - **Smooth Navigation** - Intuitive routing with Expo Router and proper stack management
 - **Loading States** - Beautiful loading indicators
 - **Success Feedback** - Clear alerts with proper timing and callbacks
 - **Bottom Tab Navigation** - Floating tab bar with 4 main screens (Home, Search, Library, Profile)
 - **Icon System** - Cross-platform SF Symbols → Material Icons mapping
+- **Genre Dropdown** - Modal-based genre selection with 16 predefined categories
+- **Status Buttons** - Toggle buttons for reading status with improved contrast
+- **Cover Photo Hierarchy** - Front cover (240px) prominently displayed, back cover (130px) secondary
 
 ## 🚀 Tech Stack
 
@@ -83,8 +86,8 @@ bookMate/
 ├── app/
 │   ├── (auth)/                 # Authentication screens group
 │   │   ├── _layout.tsx        # Auth layout
-│   │   ├── login.tsx          # Login screen with Google Sign-In
-│   │   └── register.tsx       # Registration screen
+│   │   ├── login.tsx          # Email/Password login screen
+│   │   └── register.tsx       # Email/Password registration screen
 │   ├── (dashboard)/           # Dashboard screens group
 │   │   ├── _layout.tsx        # Dashboard layout with floating tab navigation
 │   │   ├── home.tsx           # Book list screen with statistics
@@ -121,7 +124,37 @@ bookMate/
 └── package.json
 ```
 
-## � Recent Fixes & Improvements (v1.1.0)
+## 📝 Recent Updates (February 2026)
+
+### ✨ Major UI/UX Improvements
+- **Genre Dropdown Component** - Replaced text input with beautiful modal selector featuring 16 predefined genres
+- **Enhanced Status Buttons** - Improved visual contrast with outline style for inactive states
+- **Cover Photo Sizing** - Implemented hierarchy with front cover (240px) and back cover (130px)
+- **Required Fields Guide** - Added informative box explaining required fields on book forms
+- **Header Improvements** - Centered titles with left-aligned back arrow for better navigation
+- **Smart Tab Bar** - Bottom navigation automatically hides on book add/edit forms
+- **Form Field Reset** - Forms now clear automatically after successful book addition
+- **Auto-Refresh System** - Home and Library pages refresh when returning to screen using `useFocusEffect`
+
+### 🎨 Complete Theme Overhaul
+- **Emerald/Teal Theme** - Changed from Indigo (#6366f1) to Emerald (#10b981) across entire app
+- **12 Files Updated** - Comprehensive color update across all screens and components
+- **Consistent Branding** - Unified color scheme throughout authentication, dashboard, and book management screens
+
+### 👤 Profile Avatar System
+- **Icon-Based Avatars** - Replaced photo upload with 8 pre-made icon options
+- **Zero Storage Usage** - No Firebase Storage needed, icons rendered using Ionicons
+- **Fast & Stable** - Instant selection with no upload delays or errors
+- **Persistent Selection** - Avatar choice saved to Firestore and loads on login
+- **Modal Selector** - Beautiful grid layout for choosing avatars with visual feedback
+
+### 🐛 Bug Fixes
+- **Firestore Undefined Values** - Fixed "unsupported field value" error by excluding undefined fields
+- **Book Display Issues** - Fixed books not appearing after add by implementing redirect and refresh
+- **Document Creation** - Fixed avatar update error by using `setDoc` with `merge:true`
+- **Profile Icon Removal** - Removed redundant profile icon from home page header
+
+## 🔧 Recent Fixes & Improvements (v1.1.0)
 
 ### ✅ Authentication & Navigation
 - **Removed Audio Permission** - Cleared unused media library granular permissions to prevent Expo Go errors
@@ -232,10 +265,10 @@ Click **Publish** to apply.
 3. Enter name, email, and password
 4. Account is created and auto-saved to Firestore
 
-### Google Sign-In
+### Email/Password Login
 1. Open the app
-2. Click "Sign in with Google" button
-3. Select your Google account
+2. Enter your email and password
+3. Tap "Login" button
 4. Auto-login on next app open (sessions are persisted)
 
 ## 📱 Usage
@@ -268,8 +301,8 @@ Click **Publish** to apply.
 - ✅ Firebase Authentication for secure user login
 - ✅ AsyncStorage with encrypted local persistence
 - ✅ Firestore Security Rules for data access control
-- ✅ Google credentials securely configured
 - ✅ User data isolated per account (uid-based)
+- ✅ Password-based authentication with Firebase
 
 ## 📊 Database Schema
 
@@ -279,7 +312,8 @@ Click **Publish** to apply.
   uid: string
   email: string
   displayName: string
-  profilePicture?: string
+  avatar?: string  // Icon name (e.g., 'book-outline', 'glasses-outline')
+  avatarUpdatedAt?: string
   createdAt: Date
   updatedAt: Date
 }
@@ -292,7 +326,10 @@ Click **Publish** to apply.
   userId: string
   title: string
   author: string
+  genre?: string  // Selected from 16 predefined options
   status: 'reading' | 'completed' | 'to-read'
+  frontCoverUrl?: string
+  backCoverUrl?: string
   createdAt: string
   updatedAt: string
 }
@@ -301,7 +338,7 @@ Click **Publish** to apply.
 ## 🎨 Theme
 
 - **Background**: `#0f172a` (slate-950)
-- **Primary**: `#6366f1` (indigo-600)
+- **Primary**: `#10b981` (emerald-600) - Updated from indigo
 - **Secondary**: `#1e293b` (slate-900)
 - **Success**: `#22c55e` (green-500)
 - **Info**: `#3b82f6` (blue-500)
@@ -340,7 +377,6 @@ npm run reset-project
 
 ### Authentication & Database
 - `firebase` - Firebase SDK
-- `@react-native-google-signin/google-signin` - Google authentication
 - `@react-native-async-storage/async-storage` - Local storage
 
 ### Styling
@@ -372,14 +408,17 @@ For issues or questions:
 
 ## 🎯 Future Enhancements
 
+- [x] ~~Book cover images~~ ✅ Implemented
+- [x] ~~Genre selection~~ ✅ Implemented with 16-option dropdown
+- [x] ~~Profile avatars~~ ✅ Icon-based system implemented
 - [ ] Book ratings and reviews
-- [ ] Reading progress tracking
-- [ ] Book cover images
-- [ ] Search and filter functionality
+- [ ] Reading progress tracking (page numbers)
+- [ ] Search and advanced filter functionality
 - [ ] Reading goals and challenges
 - [ ] Social sharing features
 - [ ] Reading statistics graphs
 - [ ] Dark/Light theme toggle
+- [ ] Book recommendations
 
 ## 👨‍💻 Author
 
