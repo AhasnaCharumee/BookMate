@@ -32,14 +32,19 @@ export default function ProfileScreen() {
   }, [user]);
 
   const loadStats = async () => {
-    if (!user) return;
+    if (!user?.uid) {
+      console.warn('No user or UID available for stats');
+      return;
+    }
     
     showLoader();
     try {
+      console.log('Loading stats for user:', user.uid);
       const bookStats = await BookService.getBookStats(user.uid);
       setStats(bookStats);
     } catch (error: any) {
       console.error('Failed to load stats:', error.message);
+      console.error('Error code:', error.code);
     } finally {
       hideLoader();
     }

@@ -2,10 +2,11 @@ import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import {
-    FlatList,
-    Text,
-    TouchableOpacity,
-    View,
+  FlatList,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 import { useAuth } from '../../hooks/useAuth';
 import { useLoader } from '../../hooks/useLoader';
@@ -18,18 +19,26 @@ export default function LibraryScreen() {
   const [books, setBooks] = useState<Book[]>([]);
 
   useEffect(() => {
-    loadBooks();
-  }, []);
+    if (user) {
+      console.log('Loading books for user:', user.uid);
+      loadBooks();
+    }
+  }, [user]);
 
   const loadBooks = async () => {
-    if (!user) return;
+    if (!user?.uid) {
+      console.warn('No user or UID available');
+      return;
+    }
 
     showLoader();
     try {
+      console.log('Fetching books from path: users/' + user.uid + '/books');
       const userBooks = await BookService.getUserBooks(user.uid);
       setBooks(userBooks);
-    } catch (error) {
-      console.error('Failed to load books:', error);
+    } catch (error: any) {
+      console.error('Failed to load books:', error.message);
+      console.error('Error code:', error.code);
     } finally {
       hideLoader();
     }
@@ -67,13 +76,17 @@ export default function LibraryScreen() {
   }) => (
     <TouchableOpacity
       onPress={() => setFilter(value)}
-      className={`px-4 py-2 rounded-full ${
+      style={{ paddingHorizontal: 14, paddingVertical: 2, borderRadius: 16 }}
+      className={`flex-row items-center justify-center ${
         filter === value ? 'bg-indigo-600' : 'bg-slate-800'
       }`}
     >
-      <Text className={`font-bold ${
-        filter === value ? 'text-white' : 'text-slate-400'
-      }`}>
+      <Text 
+        style={{ fontSize: 12, lineHeight: 14 }}
+        className={`font-bold ${
+          filter === value ? 'text-white' : 'text-slate-400'
+        }`}
+      >
         {label} ({count})
       </Text>
     </TouchableOpacity>
@@ -87,13 +100,18 @@ export default function LibraryScreen() {
       </View>
 
       <View className="flex-1 px-6 pt-6">
-        {/* Filters */}
-        <View className="flex-row gap-2 mb-4">
+        {/* Filters - Horizontal Scroll */}
+        <ScrollView 
+          horizontal 
+          showsHorizontalScrollIndicator={false}
+          className="mb-4"
+          contentContainerStyle={{ gap: 8 }}
+        >
           <FilterButton value="all" label="All" count={books.length} />
           <FilterButton value="reading" label="Reading" count={getFilterCount('reading')} />
           <FilterButton value="completed" label="Done" count={getFilterCount('completed')} />
           <FilterButton value="to-read" label="To Read" count={getFilterCount('to-read')} />
-        </View>
+        </ScrollView>
 
         {/* Books List */}
         {filteredBooks.length > 0 ? (

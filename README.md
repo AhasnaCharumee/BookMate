@@ -43,6 +43,8 @@ A beautiful, feature-rich book management application built with **React Native*
 - **Smooth Navigation** - Intuitive routing with Expo Router and proper stack management
 - **Loading States** - Beautiful loading indicators
 - **Success Feedback** - Clear alerts with proper timing and callbacks
+- **Bottom Tab Navigation** - Floating tab bar with 4 main screens (Home, Search, Library, Profile)
+- **Icon System** - Cross-platform SF Symbols → Material Icons mapping
 
 ## 🚀 Tech Stack
 
@@ -68,8 +70,11 @@ A beautiful, feature-rich book management application built with **React Native*
 
 ### UI & Navigation
 - **Ionicons** - Beautiful icon library
+- **Material Icons** - Cross-platform icon system
 - **React Navigation** - Navigation library
-- **Custom Components** - Modular UI components
+- **Expo Router** - File-based routing with tabs and stack support
+- **Custom Components** - Modular UI components (IconSymbol, IconButton)
+- **Floating Tab Bar** - Custom positioned tab navigation with 30px offset from bottom
 
 ## 📋 Project Structure
 
@@ -81,20 +86,22 @@ bookMate/
 │   │   ├── login.tsx          # Login screen with Google Sign-In
 │   │   └── register.tsx       # Registration screen
 │   ├── (dashboard)/           # Dashboard screens group
-│   │   ├── _layout.tsx        # Dashboard layout
-│   │   ├── home.tsx           # Book list screen
-│   │   ├── profile.tsx        # User profile screen
+│   │   ├── _layout.tsx        # Dashboard layout with floating tab navigation
+│   │   ├── home.tsx           # Book list screen with statistics
+│   │   ├── search.tsx         # Book search screen
+│   │   ├── library.tsx        # Filtered book library by status
+│   │   ├── profile.tsx        # User profile with photo upload
 │   │   └── books/             # Book management screens
 │   │       ├── _layout.tsx    # Books layout
-│   │       ├── add.tsx        # Add book screen
+│   │       ├── add.tsx        # Add book with camera
 │   │       ├── [id].tsx       # Book details screen
-│   │       └── edit/[id].tsx  # Edit book screen
+│   │       └── edit/[id].tsx  # Edit book with retake photos
 │   ├── _layout.tsx            # Root layout
 │   └── index.tsx              # App entry point (redirects based on auth)
 ├── services/
 │   ├── firebase.ts            # Firebase configuration
 │   ├── authService.ts         # Authentication logic
-│   └── bookService.ts         # Book CRUD operations
+│   └── bookService.ts         # Book CRUD operations (subcollections)
 ├── contexts/
 │   ├── AuthContext.tsx        # Auth state management
 │   └── LoaderContext.tsx      # Loading state management
@@ -104,7 +111,13 @@ bookMate/
 │   └── use-color-scheme.ts    # Theme hook
 ├── components/
 │   ├── LoadingScreen.tsx      # Loading component
-│   └── BottomNav.tsx          # Bottom navigation
+│   ├── ui/
+│   │   ├── icon-symbol.tsx    # SF Symbols → Material Icons mapping
+│   │   ├── icon-button.tsx    # Reusable icon button component
+│   │   └── collapsible.tsx    # Collapsible component
+│   └── [other components]     # Camera view, parallax scroll, themed components
+├── constants/
+│   └── navigation.ts          # Navigation routes and styling config
 └── package.json
 ```
 
@@ -132,6 +145,30 @@ bookMate/
 - **Firestore Subcollections** - Updated to `users/{userId}/books/{bookId}` pattern
 - **Security Rules Applied** - Proper Firestore rules for authenticated user access
 - **Removed Redundant Checks** - Simplified book service methods with path-level security
+
+### ✅ Navigation System (v1.2.0)
+- **Bottom Tab Navigation** - Implemented floating tab bar with 4 main screens
+- **Icon Mapping System** - Created SF Symbols → Material Icons cross-platform mapping
+- **Icon Symbol Component** - Centralized icon component with 14+ icon mappings
+- **Navigation Config** - Centralized navigation routes and styling constants
+- **Icon Button Component** - Reusable icon button component for headers and actions
+- **Tab Bar Styling** - Custom positioned tab bar (30px from bottom) with rounded corners and shadow
+- **Dashboard Layout** - Converted from Stack to Tabs navigation for better UX
+
+### 📱 Navigation Structure
+```
+📍 Bottom Tab Navigation (4 screens)
+├── Home - Browse all books with covers and statistics
+├── Search - Full-text search by title/author
+├── Library - Filter books by reading status (All, Reading, Done, To Read)
+└── Profile - User profile with photo, stats, and logout
+
+📍 Hidden Screens (Stack navigation)
+└── Books Management
+    ├── /books/add - Add new book with camera
+    ├── /books/[id] - View book details
+    └── /books/edit/[id] - Edit book with photo retake
+```
 
 ## 🛠️ Installation
 
