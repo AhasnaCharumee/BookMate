@@ -76,14 +76,14 @@ export default function LibraryScreen() {
   }) => (
     <TouchableOpacity
       onPress={() => setFilter(value)}
-      style={{ paddingHorizontal: 14, paddingVertical: 2, borderRadius: 16 }}
+      style={{ paddingHorizontal: 10, paddingVertical: 4, height: 24, borderRadius: 12 }}
       className={`flex-row items-center justify-center ${
         filter === value ? 'bg-indigo-600' : 'bg-slate-800'
       }`}
     >
       <Text 
-        style={{ fontSize: 12, lineHeight: 14 }}
-        className={`font-bold ${
+        style={{ fontSize: 10 }}
+        className={`font-medium ${
           filter === value ? 'text-white' : 'text-slate-400'
         }`}
       >
