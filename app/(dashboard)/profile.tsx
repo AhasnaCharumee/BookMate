@@ -1,6 +1,8 @@
 import { Ionicons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import { router } from 'expo-router';
+import { doc, getDoc, updateDoc } from 'firebase/firestore';
+import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 import React, { useEffect, useState } from 'react';
 import {
     Alert,
@@ -13,6 +15,7 @@ import {
 import { useAuth } from '../../hooks/useAuth';
 import { useLoader } from '../../hooks/useLoader';
 import { BookService } from '../../services/bookService';
+import { db, storage } from '../../services/firebase';
 
 export default function ProfileScreen() {
   const { user, logout } = useAuth();
@@ -27,9 +30,24 @@ export default function ProfileScreen() {
 
   useEffect(() => {
     if (user) {
+      loadProfilePhoto();
       loadStats();
     }
   }, [user]);
+
+  const loadProfilePhoto = async () => {
+    if (!user?.uid) return;
+    
+    try {
+      const userDocRef = doc(db, 'users', user.uid);
+      const userDoc = await getDoc(userDocRef);
+      if (userDoc.exists() && userDoc.data().profilePhotoUrl) {
+        setProfilePhotoUri(userDoc.data().profilePhotoUrl);
+      }
+    } catch (error) {
+      console.error('Error loading profile photo:', error);
+    }
+  };
 
   const loadStats = async () => {
     if (!user?.uid) {
@@ -60,11 +78,63 @@ export default function ProfileScreen() {
       });
 
       if (!result.canceled && result.assets[0]) {
-        setProfilePhotoUri(result.assets[0].uri);
+        const imageUri = result.assets[0].uri;
+        setProfilePhotoUri(imageUri);
+        
+        // Upload to Firebase
+        await uploadProfilePhoto(imageUri);
       }
     } catch (error) {
       console.error('Error picking image:', error);
       Alert.alert('Error', 'Failed to pick image');
+    }
+  };
+
+  const uploadProfilePhoto = async (imageUri: string) => {
+    if (!user?.uid) {
+      Alert.alert('Error', 'User not authenticated');
+      return;
+    }
+
+    showLoader();
+    try {
+      // Convert image URI to blob
+      const response = await fetch(imageUri);
+      const blob = await response.blob();
+
+      // Create reference with user UID in path
+      const filename = `photo_${Date.now()}.jpg`;
+      const storageRef = ref(storage, `users/${user.uid}/${filename}`);
+      
+      console.log('Uploading to:', `users/${user.uid}/${filename}`);
+
+      // Upload with metadata
+      const metadata = {
+        contentType: 'image/jpeg',
+      };
+      
+      const uploadResult = await uploadBytes(storageRef, blob, metadata);
+      console.log('Upload successful:', uploadResult);
+
+      // Get download URL
+      const downloadUrl = await getDownloadURL(uploadResult.ref);
+      console.log('Download URL:', downloadUrl);
+
+      // Save URL to Firestore
+      const userDocRef = doc(db, 'users', user.uid);
+      await updateDoc(userDocRef, {
+        profilePhotoUrl: downloadUrl,
+        photoUpdatedAt: new Date().toISOString(),
+      });
+
+      Alert.alert('Success', 'Profile photo updated!');
+    } catch (error: any) {
+      console.error('Error uploading photo:', error);
+      console.error('Error code:', error.code);
+      console.error('Error message:', error.message);
+      Alert.alert('Error', `Failed to upload photo: ${error.message}`);
+    } finally {
+      hideLoader();
     }
   };
 
