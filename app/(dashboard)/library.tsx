@@ -101,40 +101,44 @@ export default function LibraryScreen() {
 
       <View className="flex-1 px-6 pt-6">
         {/* Filters - Horizontal Scroll */}
-        <ScrollView 
-          horizontal 
-          showsHorizontalScrollIndicator={false}
-          className="mb-4"
-          contentContainerStyle={{ gap: 8 }}
-        >
-          <FilterButton value="all" label="All" count={books.length} />
-          <FilterButton value="reading" label="Reading" count={getFilterCount('reading')} />
-          <FilterButton value="completed" label="Done" count={getFilterCount('completed')} />
-          <FilterButton value="to-read" label="To Read" count={getFilterCount('to-read')} />
-        </ScrollView>
+        <View>
+          <ScrollView 
+            horizontal 
+            showsHorizontalScrollIndicator={false}
+            className="mb-4"
+            contentContainerStyle={{ gap: 8 }}
+          >
+            <FilterButton value="all" label="All" count={books.length} />
+            <FilterButton value="reading" label="Reading" count={getFilterCount('reading')} />
+            <FilterButton value="completed" label="Done" count={getFilterCount('completed')} />
+            <FilterButton value="to-read" label="To Read" count={getFilterCount('to-read')} />
+          </ScrollView>
+        </View>
 
         {/* Books List */}
-        {filteredBooks.length > 0 ? (
-          <FlatList
-            data={filteredBooks}
-            renderItem={renderBook}
-            keyExtractor={(item) => item.id}
-            showsVerticalScrollIndicator={false}
-          />
-        ) : (
-          <View className="flex-1 justify-center items-center">
-            <Ionicons name="book-outline" size={64} color="#64748b" />
-            <Text className="text-slate-400 text-lg mt-4">
-              No books in this category
-            </Text>
-            <TouchableOpacity
-              onPress={() => router.push('/(dashboard)/books/add')}
-              className="bg-indigo-600 px-6 py-3 rounded-lg mt-4"
-            >
-              <Text className="text-white font-bold">Add Your First Book</Text>
-            </TouchableOpacity>
-          </View>
-        )}
+        <View className="flex-1">
+          {filteredBooks.length > 0 ? (
+            <FlatList
+              data={filteredBooks}
+              renderItem={renderBook}
+              keyExtractor={(item) => item.id}
+              showsVerticalScrollIndicator={false}
+            />
+          ) : (
+            <View className="flex-1 justify-center items-center">
+              <Ionicons name="book-outline" size={64} color="#64748b" />
+              <Text className="text-slate-400 text-lg mt-4">
+                No books in this category
+              </Text>
+              <TouchableOpacity
+                onPress={() => router.push('/(dashboard)/books/add')}
+                className="bg-indigo-600 px-6 py-3 rounded-lg mt-4"
+              >
+                <Text className="text-white font-bold">Add Your First Book</Text>
+              </TouchableOpacity>
+            </View>
+          )}
+        </View>
       </View>
     </View>
   );
