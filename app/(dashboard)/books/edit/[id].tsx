@@ -153,6 +153,13 @@ export default function EditBookScreen() {
       </View>
 
       <ScrollView className="flex-1 px-6 pt-6">
+        {/* Required Fields Info */}
+        <View className="mb-6 bg-slate-800 rounded-lg p-3">
+          <Text className="text-slate-300 text-xs">
+            <Text className="text-indigo-400 font-semibold">*</Text> = Required field
+          </Text>
+        </View>
+
         {/* Book Covers */}
         <View className="mb-4">
           <Text className="text-slate-400 text-sm mb-2">Book Covers (Tap to retake)</Text>
