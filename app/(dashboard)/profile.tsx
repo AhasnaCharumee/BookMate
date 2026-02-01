@@ -90,6 +90,18 @@ export default function ProfileScreen() {
     }
   };
 
+  // Helper to convert URI to Blob using XMLHttpRequest (reliable for Expo)
+  const uriToBlob = (uri: string): Promise<Blob> => {
+    return new Promise((resolve, reject) => {
+      const xhr = new XMLHttpRequest();
+      xhr.onload = () => resolve(xhr.response);
+      xhr.onerror = () => reject(new Error('Blob conversion failed'));
+      xhr.responseType = 'blob';
+      xhr.open('GET', uri, true);
+      xhr.send(null);
+    });
+  };
+
   const uploadProfilePhoto = async (imageUri: string) => {
     if (!user?.uid) {
       Alert.alert('Error', 'User not authenticated');
@@ -98,26 +110,30 @@ export default function ProfileScreen() {
 
     showLoader();
     try {
-      // Convert image URI to blob
-      const response = await fetch(imageUri);
-      const blob = await response.blob();
+      console.log('Starting image upload from:', imageUri);
 
-      // Create reference with user UID in path
-      const filename = `photo_${Date.now()}.jpg`;
-      const storageRef = ref(storage, `users/${user.uid}/${filename}`);
-      
-      console.log('Uploading to:', `users/${user.uid}/${filename}`);
+      // Convert URI to Blob using XMLHttpRequest (works reliably on Android/Expo)
+      const blob = await uriToBlob(imageUri);
+      console.log('Blob created, size:', blob.size);
+
+      // Create storage reference
+      const storageRef = ref(storage, `users/${user.uid}/profile.jpg`);
+      console.log('Uploading to:', `users/${user.uid}/profile.jpg`);
 
       // Upload with metadata
-      const metadata = {
+      await uploadBytes(storageRef, blob, {
         contentType: 'image/jpeg',
-      };
-      
-      const uploadResult = await uploadBytes(storageRef, blob, metadata);
-      console.log('Upload successful:', uploadResult);
+      });
+
+      // Close blob (important for Android)
+      if (typeof (blob as any).close === 'function') {
+        (blob as any).close();
+      }
+
+      console.log('Upload successful');
 
       // Get download URL
-      const downloadUrl = await getDownloadURL(uploadResult.ref);
+      const downloadUrl = await getDownloadURL(storageRef);
       console.log('Download URL:', downloadUrl);
 
       // Save URL to Firestore
@@ -129,7 +145,7 @@ export default function ProfileScreen() {
 
       Alert.alert('Success', 'Profile photo updated!');
     } catch (error: any) {
-      console.error('Error uploading photo:', error);
+      console.error('Full error object:', error);
       console.error('Error code:', error.code);
       console.error('Error message:', error.message);
       Alert.alert('Error', `Failed to upload photo: ${error.message}`);
