@@ -1,6 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
-import { doc, getDoc, updateDoc } from 'firebase/firestore';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
 import React, { useEffect, useState } from 'react';
 import {
   Alert,
@@ -85,10 +85,10 @@ export default function ProfileScreen() {
     try {
       showLoader();
       const userDocRef = doc(db, 'users', user.uid);
-      await updateDoc(userDocRef, {
+      await setDoc(userDocRef, {
         avatar: avatarId,
         avatarUpdatedAt: new Date().toISOString(),
-      });
+      }, { merge: true });
       
       setSelectedAvatar(avatarId);
       setShowAvatarModal(false);
