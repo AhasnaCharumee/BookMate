@@ -149,9 +149,6 @@ export default function HomeScreen() {
             <Text className="text-white text-2xl font-bold">My Books</Text>
             <Text className="text-slate-400 mt-1">{books.length} books</Text>
           </View>
-          <TouchableOpacity onPress={() => router.push('/(dashboard)/profile')}>
-            <Ionicons name="person-circle" size={40} color="#6366f1" />
-          </TouchableOpacity>
         </View>
       </View>
 
