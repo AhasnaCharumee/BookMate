@@ -1,26 +1,37 @@
 import { Ionicons } from '@expo/vector-icons';
-import * as ImagePicker from 'expo-image-picker';
 import { router } from 'expo-router';
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
-import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 import React, { useEffect, useState } from 'react';
 import {
-    Alert,
-    Image,
-    ScrollView,
-    Text,
-    TouchableOpacity,
-    View,
+  Alert,
+  Modal,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 import { useAuth } from '../../hooks/useAuth';
 import { useLoader } from '../../hooks/useLoader';
 import { BookService } from '../../services/bookService';
-import { db, storage } from '../../services/firebase';
+import { db } from '../../services/firebase';
+
+// Available avatar icons
+const AVATAR_ICONS = [
+  { id: 'book-outline', label: 'Book' },
+  { id: 'glasses-outline', label: 'Glasses' },
+  { id: 'person-outline', label: 'Person' },
+  { id: 'heart-outline', label: 'Heart' },
+  { id: 'star-outline', label: 'Star' },
+  { id: 'planet-outline', label: 'Planet' },
+  { id: 'rocket-outline', label: 'Rocket' },
+  { id: 'cafe-outline', label: 'Coffee' },
+] as const;
 
 export default function ProfileScreen() {
   const { user, logout } = useAuth();
   const { showLoader, hideLoader } = useLoader();
-  const [profilePhotoUri, setProfilePhotoUri] = useState<string | null>(null);
+  const [selectedAvatar, setSelectedAvatar] = useState<string>('book-outline');
+  const [showAvatarModal, setShowAvatarModal] = useState(false);
   const [stats, setStats] = useState({
     total: 0,
     reading: 0,
@@ -30,22 +41,22 @@ export default function ProfileScreen() {
 
   useEffect(() => {
     if (user) {
-      loadProfilePhoto();
+      loadAvatar();
       loadStats();
     }
   }, [user]);
 
-  const loadProfilePhoto = async () => {
+  const loadAvatar = async () => {
     if (!user?.uid) return;
     
     try {
       const userDocRef = doc(db, 'users', user.uid);
       const userDoc = await getDoc(userDocRef);
-      if (userDoc.exists() && userDoc.data().profilePhotoUrl) {
-        setProfilePhotoUri(userDoc.data().profilePhotoUrl);
+      if (userDoc.exists() && userDoc.data().avatar) {
+        setSelectedAvatar(userDoc.data().avatar);
       }
     } catch (error) {
-      console.error('Error loading profile photo:', error);
+      console.error('Error loading avatar:', error);
     }
   };
 
@@ -68,87 +79,23 @@ export default function ProfileScreen() {
     }
   };
 
-  const pickImage = async () => {
+  const handleAvatarSelect = async (avatarId: string) => {
+    if (!user?.uid) return;
+
     try {
-      const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ['images'],
-        allowsEditing: true,
-        aspect: [1, 1],
-        quality: 0.8,
-      });
-
-      if (!result.canceled && result.assets[0]) {
-        const imageUri = result.assets[0].uri;
-        setProfilePhotoUri(imageUri);
-        
-        // Upload to Firebase
-        await uploadProfilePhoto(imageUri);
-      }
-    } catch (error) {
-      console.error('Error picking image:', error);
-      Alert.alert('Error', 'Failed to pick image');
-    }
-  };
-
-  // Helper to convert URI to Blob using XMLHttpRequest (reliable for Expo)
-  const uriToBlob = (uri: string): Promise<Blob> => {
-    return new Promise((resolve, reject) => {
-      const xhr = new XMLHttpRequest();
-      xhr.onload = () => resolve(xhr.response);
-      xhr.onerror = () => reject(new Error('Blob conversion failed'));
-      xhr.responseType = 'blob';
-      xhr.open('GET', uri, true);
-      xhr.send(null);
-    });
-  };
-
-  const uploadProfilePhoto = async (imageUri: string) => {
-    if (!user?.uid) {
-      Alert.alert('Error', 'User not authenticated');
-      return;
-    }
-
-    showLoader();
-    try {
-      console.log('Starting image upload from:', imageUri);
-
-      // Convert URI to Blob using XMLHttpRequest (works reliably on Android/Expo)
-      const blob = await uriToBlob(imageUri);
-      console.log('Blob created, size:', blob.size);
-
-      // Create storage reference
-      const storageRef = ref(storage, `users/${user.uid}/profile.jpg`);
-      console.log('Uploading to:', `users/${user.uid}/profile.jpg`);
-
-      // Upload with metadata
-      await uploadBytes(storageRef, blob, {
-        contentType: 'image/jpeg',
-      });
-
-      // Close blob (important for Android)
-      if (typeof (blob as any).close === 'function') {
-        (blob as any).close();
-      }
-
-      console.log('Upload successful');
-
-      // Get download URL
-      const downloadUrl = await getDownloadURL(storageRef);
-      console.log('Download URL:', downloadUrl);
-
-      // Save URL to Firestore
+      showLoader();
       const userDocRef = doc(db, 'users', user.uid);
       await updateDoc(userDocRef, {
-        profilePhotoUrl: downloadUrl,
-        photoUpdatedAt: new Date().toISOString(),
+        avatar: avatarId,
+        avatarUpdatedAt: new Date().toISOString(),
       });
-
-      Alert.alert('Success', 'Profile photo updated!');
+      
+      setSelectedAvatar(avatarId);
+      setShowAvatarModal(false);
+      Alert.alert('Success', 'Avatar updated!');
     } catch (error: any) {
-      console.error('Full error object:', error);
-      console.error('Error code:', error.code);
-      console.error('Error message:', error.message);
-      Alert.alert('Error', `Failed to upload photo: ${error.message}`);
+      console.error('Error updating avatar:', error);
+      Alert.alert('Error', 'Failed to update avatar');
     } finally {
       hideLoader();
     }
@@ -188,22 +135,12 @@ export default function ProfileScreen() {
         <View className="bg-slate-900 rounded-xl p-6 mb-6">
           {/* Avatar */}
           <View className="items-center mb-4">
-            <TouchableOpacity onPress={pickImage}>
-              <View className="w-24 h-24 bg-emerald-600 rounded-full items-center justify-center overflow-hidden">
-                {profilePhotoUri ? (
-                  <Image 
-                    source={{ uri: profilePhotoUri }} 
-                    className="w-full h-full"
-                    resizeMode="cover"
-                  />
-                ) : (
-                  <Text className="text-white text-4xl font-bold">
-                    {user.displayName?.charAt(0).toUpperCase() || 'U'}
-                  </Text>
-                )}
+            <TouchableOpacity onPress={() => setShowAvatarModal(true)}>
+              <View className="w-24 h-24 bg-emerald-600 rounded-full items-center justify-center">
+                <Ionicons name={selectedAvatar as any} size={48} color="white" />
               </View>
               <View className="absolute bottom-0 right-0 bg-emerald-600 rounded-full p-2 border-2 border-slate-900">
-                <Ionicons name="camera" size={16} color="white" />
+                <Ionicons name="create-outline" size={16} color="white" />
               </View>
             </TouchableOpacity>
           </View>
@@ -272,6 +209,60 @@ export default function ProfileScreen() {
           </Text>
         </TouchableOpacity>
       </ScrollView>
+
+      {/* Avatar Selection Modal */}
+      <Modal
+        visible={showAvatarModal}
+        transparent
+        animationType="slide"
+        onRequestClose={() => setShowAvatarModal(false)}
+      >
+        <View className="flex-1 bg-black/80 justify-end">
+          <View className="bg-slate-900 rounded-t-3xl p-6 max-h-[70%]">
+            {/* Modal Header */}
+            <View className="flex-row items-center justify-between mb-6">
+              <Text className="text-white text-xl font-bold">Choose Avatar</Text>
+              <TouchableOpacity onPress={() => setShowAvatarModal(false)}>
+                <Ionicons name="close" size={28} color="#64748b" />
+              </TouchableOpacity>
+            </View>
+
+            {/* Avatar Grid */}
+            <ScrollView showsVerticalScrollIndicator={false}>
+              <View className="flex-row flex-wrap justify-between">
+                {AVATAR_ICONS.map((avatar) => (
+                  <TouchableOpacity
+                    key={avatar.id}
+                    onPress={() => handleAvatarSelect(avatar.id)}
+                    className={`w-[48%] mb-4 p-4 rounded-xl items-center ${
+                      selectedAvatar === avatar.id
+                        ? 'bg-emerald-600'
+                        : 'bg-slate-800'
+                    }`}
+                  >
+                    <View className="mb-2">
+                      <Ionicons
+                        name={avatar.id as any}
+                        size={48}
+                        color={selectedAvatar === avatar.id ? '#ffffff' : '#94a3b8'}
+                      />
+                    </View>
+                    <Text
+                      className={`text-center font-semibold ${
+                        selectedAvatar === avatar.id
+                          ? 'text-white'
+                          : 'text-slate-400'
+                      }`}
+                    >
+                      {avatar.label}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+            </ScrollView>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }
