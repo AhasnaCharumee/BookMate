@@ -257,7 +257,53 @@ service cloud.firestore {
 
 Click **Publish** to apply.
 
-## 🔑 Authentication
+## � Building APK for Demonstration
+
+### Method 1: EAS Build (Recommended)
+
+1. **Install EAS CLI**
+```bash
+npm install -g eas-cli
+```
+
+2. **Login to Expo account**
+```bash
+eas login
+```
+
+3. **Configure EAS Build**
+```bash
+eas build:configure
+```
+
+4. **Build APK**
+```bash
+eas build --platform android --profile preview
+```
+
+5. **Download APK**
+- After build completes, download the APK from the provided link
+- Install on Android device for demonstration
+
+### Method 2: Local Build (Development)
+
+1. **Create development build**
+```bash
+npx expo run:android
+```
+
+2. **APK Location**
+- APK will be generated in: `android/app/build/outputs/apk/`
+- Copy the APK file for installation
+
+### Testing the APK
+
+1. Enable "Install from Unknown Sources" on Android device
+2. Transfer APK to device via USB or email
+3. Install and test all features
+4. Ready for viva/presentation demonstration
+
+## �🔑 Authentication
 
 ### Email/Password Sign-Up
 1. Open the app
