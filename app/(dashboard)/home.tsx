@@ -1,6 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
+import { useFocusEffect } from '@react-navigation/native';
 import { router } from 'expo-router';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
     Alert,
     FlatList,
@@ -23,6 +24,13 @@ export default function HomeScreen() {
   useEffect(() => {
     loadBooks();
   }, []);
+
+  // Reload books when screen comes back into focus
+  useFocusEffect(
+    useCallback(() => {
+      loadBooks();
+    }, [user])
+  );
 
   const loadBooks = async () => {
     if (!user) return;

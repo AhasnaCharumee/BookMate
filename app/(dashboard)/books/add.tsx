@@ -126,6 +126,15 @@ export default function AddBookScreen() {
       // Hide loader first
       hideLoader();
 
+      // Clear form fields
+      setTitle('');
+      setAuthor('');
+      setGenre('');
+      setDescription('');
+      setStatus('to-read');
+      setFrontCoverUri(null);
+      setBackCoverUri(null);
+
       // Show success message
       Alert.alert(
         'Success',
@@ -134,8 +143,8 @@ export default function AddBookScreen() {
           {
             text: 'OK',
             onPress: () => {
-              console.log('Redirecting to home...');
-              router.replace('/(dashboard)/home');
+              console.log('Redirecting to library...');
+              router.replace('/(dashboard)/library');
             }
           }
         ]

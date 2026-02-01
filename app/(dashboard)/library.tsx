@@ -1,6 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
+import { useFocusEffect } from '@react-navigation/native';
 import { router } from 'expo-router';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   FlatList,
   ScrollView,
@@ -24,6 +25,15 @@ export default function LibraryScreen() {
       loadBooks();
     }
   }, [user]);
+
+  // Reload books when screen comes back into focus
+  useFocusEffect(
+    useCallback(() => {
+      if (user) {
+        loadBooks();
+      }
+    }, [user])
+  );
 
   const loadBooks = async () => {
     if (!user?.uid) {
