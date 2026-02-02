@@ -270,42 +270,24 @@ export default function AddBookScreen() {
           </View>
         </View>
 
-        {/* Book Cover Photos */}
+        {/* Book Cover Photo */}
         <View className="mb-6">
-          <Text className="text-slate-400 text-sm mb-2">Book Cover Photos (Optional)</Text>
-          <View>
-            {/* Front Cover - Main */}
-            <TouchableOpacity
-              className="bg-slate-800 rounded-lg p-4 items-center justify-center mb-3"
-              style={{ height: 240 }}
-              onPress={() => openCamera('front')}
-            >
-              {frontCoverUri ? (
-                <Image source={{ uri: frontCoverUri }} className="w-full h-full rounded-lg" />
-              ) : (
-                <View className="items-center">
-                  <Ionicons name="camera" size={40} color="#10b981" />
-                  <Text className="text-emerald-400 text-sm mt-2 font-semibold">Front Cover (Main)</Text>
-                </View>
-              )}
-            </TouchableOpacity>
-
-            {/* Back Cover - Secondary */}
-            <TouchableOpacity
-              className="bg-slate-800 rounded-lg p-4 items-center justify-center"
-              style={{ height: 140 }}
-              onPress={() => openCamera('back')}
-            >
-              {backCoverUri ? (
-                <Image source={{ uri: backCoverUri }} className="w-full h-full rounded-lg" />
-              ) : (
-                <View className="items-center">
-                  <Ionicons name="camera" size={28} color="#10b981" />
-                  <Text className="text-slate-400 text-xs mt-2">Back Cover (Optional)</Text>
-                </View>
-              )}
-            </TouchableOpacity>
-          </View>
+          <Text className="text-slate-400 text-sm mb-2">Book Cover (Optional)</Text>
+          {/* Front Cover - Main */}
+          <TouchableOpacity
+            className="bg-slate-800 rounded-lg p-4 items-center justify-center"
+            style={{ height: 240 }}
+            onPress={() => openCamera('front')}
+          >
+            {frontCoverUri ? (
+              <Image source={{ uri: frontCoverUri }} className="w-full h-full rounded-lg" />
+            ) : (
+              <View className="items-center">
+                <Ionicons name="camera" size={40} color="#10b981" />
+                <Text className="text-emerald-400 text-sm mt-2 font-semibold">Tap to capture photo</Text>
+              </View>
+            )}
+          </TouchableOpacity>
         </View>
 
         {/* Add Button */}
