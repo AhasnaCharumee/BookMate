@@ -6,13 +6,16 @@ import React, { useRef, useState } from 'react';
 import {
   Alert,
   Image,
+  KeyboardAvoidingView,
   Modal,
+  Platform,
   ScrollView,
   Text,
   TextInput,
   TouchableOpacity,
   View,
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import GenreDropdown from '../../../components/genre-dropdown';
 import { useAuth } from '../../../hooks/useAuth';
 import { useLoader } from '../../../hooks/useLoader';
@@ -21,6 +24,7 @@ import { BookService } from '../../../services/bookService';
 export default function AddBookScreen() {
   const { user } = useAuth();
   const { showLoader, hideLoader } = useLoader();
+  const insets = useSafeAreaInsets();
   
   // Wait for user to be ready before rendering
   if (!user) {
@@ -184,11 +188,11 @@ export default function AddBookScreen() {
       className={`flex-1 p-3 rounded-lg border-2 ${
         status === value 
           ? 'bg-emerald-600 border-emerald-600' 
-          : 'bg-transparent border-slate-600'
+          : 'bg-slate-800 border-slate-700'
       }`}
     >
       <Text className={`text-center font-bold ${
-        status === value ? 'text-white' : 'text-slate-300'
+        status === value ? 'text-white' : 'text-slate-400'
       }`}>
         {label}
       </Text>
@@ -196,14 +200,18 @@ export default function AddBookScreen() {
   );
 
   return (
-    <View className="flex-1 bg-slate-950">
-      {/* Header */}
-      <View className="bg-slate-900 px-6 pt-12 pb-6">
-        <View className="flex-row items-center justify-center">
-          <TouchableOpacity onPress={() => router.back()} className="absolute left-6">
-            <Ionicons name="arrow-back" size={24} color="white" />
-          </TouchableOpacity>
-          <Text className="text-white text-2xl font-bold">Add New Book</Text>
+    <KeyboardAvoidingView 
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      className="flex-1 bg-slate-950"
+    >
+      <View className="flex-1 bg-slate-950">
+        {/* Header */}
+        <View className="bg-slate-900 px-6 pt-8 pb-4">
+          <View className="flex-row items-center justify-center">
+            <TouchableOpacity onPress={() => router.back()} className="absolute left-6">
+              <Ionicons name="arrow-back" size={24} color="white" />
+            </TouchableOpacity>
+            <Text className="text-white text-2xl font-bold">Add New Book</Text>
         </View>
       </View>
 
@@ -272,19 +280,20 @@ export default function AddBookScreen() {
 
         {/* Book Cover Photo */}
         <View className="mb-6">
-          <Text className="text-slate-400 text-sm mb-2">Book Cover (Optional)</Text>
+          <Text className="text-slate-300 text-sm mb-2 font-semibold">Book Cover Photo</Text>
           {/* Front Cover - Main */}
           <TouchableOpacity
-            className="bg-slate-800 rounded-lg p-4 items-center justify-center"
-            style={{ height: 240 }}
+            className="bg-slate-800 rounded-lg p-4 items-center justify-center border-2 border-dashed border-slate-600"
+            style={{ height: 200 }}
             onPress={() => openCamera('front')}
           >
             {frontCoverUri ? (
               <Image source={{ uri: frontCoverUri }} className="w-full h-full rounded-lg" />
             ) : (
               <View className="items-center">
-                <Ionicons name="camera" size={40} color="#10b981" />
-                <Text className="text-emerald-400 text-sm mt-2 font-semibold">Tap to capture photo</Text>
+                <Ionicons name="camera" size={48} color="#10b981" />
+                <Text className="text-emerald-400 text-base mt-4 font-semibold">Capture Photo</Text>
+                <Text className="text-slate-500 text-xs mt-1">Tap to take a photo</Text>
               </View>
             )}
           </TouchableOpacity>
@@ -292,13 +301,16 @@ export default function AddBookScreen() {
 
         {/* Add Button */}
         <TouchableOpacity
-          className="bg-emerald-600 p-4 rounded-lg mb-6"
+          className="bg-emerald-600 p-4 rounded-lg active:bg-emerald-700"
           onPress={handleAddBook}
         >
           <Text className="text-white text-center font-bold text-lg">
             Add Book
           </Text>
         </TouchableOpacity>
+
+        {/* Safe area bottom spacing */}
+        <View style={{ height: Math.max(16, insets.bottom) }} />
       </ScrollView>
 
       {/* Camera Modal */}
@@ -402,5 +414,6 @@ export default function AddBookScreen() {
         </View>
       </Modal>
     </View>
+    </KeyboardAvoidingView>
   );
 }
