@@ -149,6 +149,12 @@ export default function HomeScreen() {
             <Text className="text-white text-2xl font-bold">My Books</Text>
             <Text className="text-slate-400 mt-1">{books.length} books</Text>
           </View>
+          <TouchableOpacity
+            onPress={() => router.push('/(dashboard)/books/add')}
+            className="bg-emerald-600 w-12 h-12 rounded-full items-center justify-center"
+          >
+            <Ionicons name="add" size={28} color="white" />
+          </TouchableOpacity>
         </View>
       </View>
 
@@ -175,21 +181,6 @@ export default function HomeScreen() {
           />
         )}
       </View>
-
-      {/* Floating Add Button */}
-      <TouchableOpacity
-        onPress={() => router.push('/(dashboard)/books/add')}
-        className="absolute bottom-6 right-6 bg-emerald-600 w-16 h-16 rounded-full items-center justify-center shadow-lg"
-        style={{
-          shadowColor: '#000',
-          shadowOffset: { width: 0, height: 4 },
-          shadowOpacity: 0.3,
-          shadowRadius: 4,
-          elevation: 8,
-        }}
-      >
-        <Ionicons name="add" size={32} color="white" />
-      </TouchableOpacity>
     </View>
   );
 }
