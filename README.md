@@ -273,8 +273,7 @@ eas login
 
 3. **Configure EAS Build**
 ```bash
-eas build:configure
-```
+1```
 
 4. **Build APK**
 ```bash
@@ -316,7 +315,34 @@ npx expo run:android
 2. Enter your email and password
 3. Tap "Login" button
 4. Auto-login on next app open (sessions are persisted)
+---
 
+## 📱 APK BUILD GUIDE (For Viva/Presentation)
+
+### Quick Start (Copy-Paste Commands)
+
+1. **Fix dependencies**
+```powershell
+npx expo install --fix
+rmdir /s /q node_modules
+npm install
+```
+
+2. **Login to Expo**
+```powershell
+eas login
+```
+
+3. **Build APK** 🔥
+```powershell
+eas build -p android --profile preview --clear-cache
+```
+
+4. **Download APK from terminal link** ✅
+
+Your `eas.json` is already configured correctly with `"buildType": "apk"` for preview profile.
+
+---
 ## 📱 Usage
 
 ### Adding a Book

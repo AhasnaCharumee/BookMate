@@ -56,10 +56,10 @@ export default function LibraryScreen() {
 
   const filteredBooks = filter === 'all' 
     ? books 
-    : books.filter(book => book.status === filter);
+    : books.filter((book: any) => book.status === filter);
 
   const getFilterCount = (status: 'reading' | 'completed' | 'to-read') => {
-    return books.filter(book => book.status === status).length;
+    return books.filter((book: any) => book.status === status).length;
   };
 
   const renderBook = ({ item }: { item: Book }) => (
@@ -131,7 +131,7 @@ export default function LibraryScreen() {
             <FlatList
               data={filteredBooks}
               renderItem={renderBook}
-              keyExtractor={(item) => item.id}
+              keyExtractor={(item: any) => item.id}
               showsVerticalScrollIndicator={false}
             />
           ) : (

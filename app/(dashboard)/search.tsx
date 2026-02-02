@@ -100,7 +100,7 @@ export default function SearchScreen() {
                 <FlatList
                   data={searchResults}
                   renderItem={renderBook}
-                  keyExtractor={(item) => item.id}
+                  keyExtractor={(item: any) => item.id}
                   showsVerticalScrollIndicator={false}
                 />
               </>

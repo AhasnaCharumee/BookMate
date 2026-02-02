@@ -166,7 +166,7 @@ export default function HomeScreen() {
           <FlatList
             data={books}
             renderItem={renderBook}
-            keyExtractor={(item) => item.id}
+            keyExtractor={(item: any) => item.id}
             refreshing={refreshing}
             onRefresh={() => {
               setRefreshing(true);
