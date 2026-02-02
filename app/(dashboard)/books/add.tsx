@@ -44,11 +44,6 @@ export default function AddBookScreen() {
   const cameraRef = useRef<any>(null);
   const CameraViewWithRef = CameraView as any;
 
-  // Request gallery permission on mount
-  React.useEffect(() => {
-    MediaLibrary.requestPermissionsAsync();
-  }, []);
-
   // Request camera permission on mount only
   React.useEffect(() => {
     const requestCameraPermission = async () => {
