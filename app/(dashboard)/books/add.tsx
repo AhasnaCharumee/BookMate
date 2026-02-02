@@ -1,6 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
 import { CameraView, useCameraPermissions } from 'expo-camera';
-import * as FileSystem from 'expo-file-system/legacy';
 import * as MediaLibrary from 'expo-media-library';
 import { router } from 'expo-router';
 import React, { useRef, useState } from 'react';
@@ -45,6 +44,11 @@ export default function AddBookScreen() {
   const cameraRef = useRef<any>(null);
   const CameraViewWithRef = CameraView as any;
 
+  // Request gallery permission on mount
+  React.useEffect(() => {
+    MediaLibrary.requestPermissionsAsync();
+  }, []);
+
   // Request camera permission on mount only
   React.useEffect(() => {
     const requestCameraPermission = async () => {
@@ -69,52 +73,40 @@ export default function AddBookScreen() {
   };
 
   const takePicture = async () => {
-    if (cameraRef.current) {
-      try {
-        console.log('Taking picture...');
-        const photo = await cameraRef.current.takePictureAsync({ 
-          quality: 0.8,
-          base64: false,
-          mute: false,
-        });
-        console.log('Photo taken:', photo.uri);
-        
-        // Copy photo to permanent app directory
-        const fileName = `book_cover_${Date.now()}.jpg`;
-        const newPath = (FileSystem as any).documentDirectory + fileName;
-        await FileSystem.copyAsync({
-          from: photo.uri,
-          to: newPath
-        });
-        console.log('Photo copied to:', newPath);
-        
-        // Save to gallery
-        try {
-          const { status } = await MediaLibrary.requestPermissionsAsync();
-          if (status === 'granted') {
-            await MediaLibrary.saveToLibraryAsync(photo.uri);
-            console.log('Photo saved to gallery');
-            Alert.alert('Success', 'Photo saved to gallery!');
-          } else {
-            console.log('Gallery permission not granted');
-          }
-        } catch (saveError) {
-          console.log('Could not save to gallery:', saveError);
-          // Continue even if saving to gallery fails
-        }
-        
-        // Use the permanent path instead of temporary camera URI
-        if (currentCover === 'front') {
-          setFrontCoverUri(newPath);
-        } else {
-          setBackCoverUri(newPath);
-        }
-        setCameraVisible(false);
-        setCurrentCover(null);
-      } catch (error: any) {
-        console.error('Camera error:', error);
-        Alert.alert('Error', 'Failed to take picture: ' + error.message);
+    if (!cameraRef.current) return;
+
+    try {
+      console.log('Taking picture...');
+      const photo = await cameraRef.current.takePictureAsync({
+        quality: 0.8,
+        skipProcessing: true,
+      });
+      console.log('Photo taken:', photo.uri);
+
+      // Request gallery permission
+      const { status } = await MediaLibrary.requestPermissionsAsync();
+      if (status !== 'granted') {
+        Alert.alert('Permission Denied', 'Gallery permission is required to save photos');
+        return;
       }
+
+      // Save directly to gallery (no copy needed)
+      const asset = await MediaLibrary.createAssetAsync(photo.uri);
+      console.log('Saved to gallery:', asset.uri);
+
+      // Use gallery URI
+      if (currentCover === 'front') {
+        setFrontCoverUri(asset.uri);
+      } else {
+        setBackCoverUri(asset.uri);
+      }
+
+      Alert.alert('Success', 'Photo saved to gallery!');
+      setCameraVisible(false);
+      setCurrentCover(null);
+    } catch (error: any) {
+      console.error('Camera error:', error);
+      Alert.alert('Error', 'Failed to take picture: ' + error.message);
     }
   };
 
