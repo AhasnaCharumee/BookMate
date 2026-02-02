@@ -43,6 +43,7 @@ export default function AddBookScreen() {
   const [currentCover, setCurrentCover] = useState<'front' | 'back' | null>(null);
   const [permission, requestPermission] = useCameraPermissions();
   const cameraRef = useRef<any>(null);
+  const CameraViewWithRef = CameraView as any;
 
   // Request camera permission on mount only
   React.useEffect(() => {
@@ -80,7 +81,7 @@ export default function AddBookScreen() {
         
         // Copy photo to permanent app directory
         const fileName = `book_cover_${Date.now()}.jpg`;
-        const newPath = FileSystem.documentDirectory + fileName;
+        const newPath = (FileSystem as any).documentDirectory + fileName;
         await FileSystem.copyAsync({
           from: photo.uri,
           to: newPath
@@ -331,7 +332,7 @@ export default function AddBookScreen() {
         <View style={{ flex: 1, backgroundColor: 'black' }}>
           {permission?.granted ? (
             <>
-              <CameraView 
+              <CameraViewWithRef 
                 ref={cameraRef} 
                 style={{ flex: 1, width: '100%', height: '100%' }}
                 facing="back"

@@ -31,6 +31,7 @@ export default function EditBookScreen() {
   const [currentCover, setCurrentCover] = useState<'front' | 'back' | null>(null);
   const [permission, requestPermission] = useCameraPermissions();
   const cameraRef = useRef<any>(null);
+  const CameraViewWithRef = CameraView as any;
 
   useEffect(() => {
     loadBook();
@@ -268,7 +269,7 @@ export default function EditBookScreen() {
         <View style={{ flex: 1, backgroundColor: 'black' }}>
           {permission?.granted ? (
             <>
-              <CameraView 
+              <CameraViewWithRef 
                 ref={cameraRef}
                 style={{ flex: 1, width: '100%', height: '100%' }}
                 facing="back"
