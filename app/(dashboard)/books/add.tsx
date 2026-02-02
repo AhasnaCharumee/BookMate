@@ -1,5 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import { CameraView, useCameraPermissions } from 'expo-camera';
+import * as FileSystem from 'expo-file-system';
 import * as MediaLibrary from 'expo-media-library';
 import { router } from 'expo-router';
 import React, { useRef, useState } from 'react';
@@ -77,22 +78,35 @@ export default function AddBookScreen() {
         });
         console.log('Photo taken:', photo.uri);
         
+        // Copy photo to permanent app directory
+        const fileName = `book_cover_${Date.now()}.jpg`;
+        const newPath = FileSystem.documentDirectory + fileName;
+        await FileSystem.copyAsync({
+          from: photo.uri,
+          to: newPath
+        });
+        console.log('Photo copied to:', newPath);
+        
         // Save to gallery
         try {
           const { status } = await MediaLibrary.requestPermissionsAsync();
           if (status === 'granted') {
             await MediaLibrary.saveToLibraryAsync(photo.uri);
             console.log('Photo saved to gallery');
+            Alert.alert('Success', 'Photo saved to gallery!');
+          } else {
+            console.log('Gallery permission not granted');
           }
         } catch (saveError) {
           console.log('Could not save to gallery:', saveError);
           // Continue even if saving to gallery fails
         }
         
+        // Use the permanent path instead of temporary camera URI
         if (currentCover === 'front') {
-          setFrontCoverUri(photo.uri);
+          setFrontCoverUri(newPath);
         } else {
-          setBackCoverUri(photo.uri);
+          setBackCoverUri(newPath);
         }
         setCameraVisible(false);
         setCurrentCover(null);
