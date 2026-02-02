@@ -1,9 +1,11 @@
 import { Tabs, usePathname } from 'expo-router';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { IconSymbol } from '../../components/ui/icon-symbol';
 import { NAVIGATION_ROUTES, TAB_BAR_CONFIG } from '../../constants/navigation';
 
 export default function DashboardLayout() {
   const pathname = usePathname();
+  const insets = useSafeAreaInsets();
   
   // Hide tab bar on form pages
   const isFormPage = pathname.includes('/books/add') || 
@@ -21,10 +23,10 @@ export default function DashboardLayout() {
           borderTopColor: '#334155', // slate-700
           borderTopWidth: 1,
           height: TAB_BAR_CONFIG.height,
-          paddingBottom: 12,
+          paddingBottom: Math.max(12, insets.bottom),
           paddingTop: 8,
           position: 'absolute',
-          bottom: 30,
+          bottom: 0,
           left: 10,
           right: 10,
           borderRadius: 16,
