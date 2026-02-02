@@ -78,11 +78,16 @@ export default function AddBookScreen() {
       });
       console.log('Photo taken:', photo.uri);
 
-      // Request gallery permission
-      const { status } = await MediaLibrary.requestPermissionsAsync();
-      if (status !== 'granted') {
-        Alert.alert('Permission Denied', 'Gallery permission is required to save photos');
-        return;
+      // Request gallery permission (with error handling for AUDIO permission issue)
+      try {
+        const { status } = await MediaLibrary.requestPermissionsAsync();
+        if (status !== 'granted') {
+          Alert.alert('Permission Denied', 'Gallery permission is required to save photos');
+          return;
+        }
+      } catch (permError) {
+        console.log('Permission request error (continuing anyway):', permError);
+        // Continue even if permission request fails - we'll try to save anyway
       }
 
       // Save directly to gallery (no copy needed)
