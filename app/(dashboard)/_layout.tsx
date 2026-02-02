@@ -22,8 +22,8 @@ export default function DashboardLayout() {
           backgroundColor: TAB_BAR_CONFIG.backgroundColor,
           borderTopColor: '#334155', // slate-700
           borderTopWidth: 1,
-          height: TAB_BAR_CONFIG.height,
-          paddingBottom: Math.max(12, insets.bottom),
+          height: 60 + insets.bottom,
+          paddingBottom: insets.bottom,
           paddingTop: 8,
           position: 'absolute',
           bottom: 0,
@@ -36,6 +36,9 @@ export default function DashboardLayout() {
           shadowOpacity: 0.25,
           shadowRadius: 8,
           display: isFormPage ? 'none' : 'flex',
+        },
+        tabBarItemStyle: {
+          paddingVertical: 8,
         },
         tabBarLabelStyle: {
           fontSize: 12,
