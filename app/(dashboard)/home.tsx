@@ -175,6 +175,21 @@ export default function HomeScreen() {
           />
         )}
       </View>
+
+      {/* Floating Add Button */}
+      <TouchableOpacity
+        onPress={() => router.push('/(dashboard)/books/add')}
+        className="absolute bottom-6 right-6 bg-emerald-600 w-16 h-16 rounded-full items-center justify-center shadow-lg"
+        style={{
+          shadowColor: '#000',
+          shadowOffset: { width: 0, height: 4 },
+          shadowOpacity: 0.3,
+          shadowRadius: 4,
+          elevation: 8,
+        }}
+      >
+        <Ionicons name="add" size={32} color="white" />
+      </TouchableOpacity>
     </View>
   );
 }

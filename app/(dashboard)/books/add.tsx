@@ -1,5 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import { CameraView, useCameraPermissions } from 'expo-camera';
+import * as MediaLibrary from 'expo-media-library';
 import { router } from 'expo-router';
 import React, { useRef, useState } from 'react';
 import {
@@ -75,6 +76,18 @@ export default function AddBookScreen() {
           mute: false,
         });
         console.log('Photo taken:', photo.uri);
+        
+        // Save to gallery
+        try {
+          const { status } = await MediaLibrary.requestPermissionsAsync();
+          if (status === 'granted') {
+            await MediaLibrary.saveToLibraryAsync(photo.uri);
+            console.log('Photo saved to gallery');
+          }
+        } catch (saveError) {
+          console.log('Could not save to gallery:', saveError);
+          // Continue even if saving to gallery fails
+        }
         
         if (currentCover === 'front') {
           setFrontCoverUri(photo.uri);
