@@ -8,7 +8,7 @@ import {
     getDocs,
     updateDoc,
 } from 'firebase/firestore';
-import { getDownloadURL, ref, uploadBytes, uploadString } from 'firebase/storage';
+import { getDownloadURL, ref, uploadString } from 'firebase/storage';
 import { db as firestore, storage } from './firebase';
 
 export interface Book {
@@ -67,16 +67,10 @@ export class BookService {
     const filePath = `users/${userId}/books/${bookId}/${coverType}-${Date.now()}.jpg`;
     const storageRef = ref(storage, filePath);
 
-    try {
-      const response = await fetch(uri);
-      const blob = await response.blob();
-      await uploadBytes(storageRef, blob);
-    } catch (error) {
-      const base64 = await readAsStringAsync(uri, {
-        encoding: 'base64' as any,
-      });
-      await uploadString(storageRef, base64, 'base64');
-    }
+    const base64 = await readAsStringAsync(uri, {
+      encoding: 'base64' as any,
+    });
+    await uploadString(storageRef, base64, 'base64');
 
     return getDownloadURL(storageRef);
   }
