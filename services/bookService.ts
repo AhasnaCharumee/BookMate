@@ -1,4 +1,4 @@
-import { readAsStringAsync } from 'expo-file-system';
+import { readAsStringAsync } from 'expo-file-system/legacy';
 import {
     addDoc,
     collection,
@@ -80,6 +80,20 @@ export class BookService {
 
     return getDownloadURL(storageRef);
   }
+
+  private static async safeUploadCover(
+    userId: string,
+    bookId: string,
+    uri: string,
+    coverType: 'front' | 'back'
+  ): Promise<string | null> {
+    try {
+      return await this.uploadCover(userId, bookId, uri, coverType);
+    } catch (error) {
+      console.warn('Cover upload failed, keeping existing image:', error);
+      return null;
+    }
+  }
   // Get all books for a user
   static async getUserBooks(userId: string): Promise<Book[]> {
     try {
@@ -144,21 +158,23 @@ export class BookService {
       const updates: Partial<BookInput> = {};
 
       if (bookData.frontCoverUri) {
-        updates.frontCoverUri = await this.uploadCover(
+        const frontUrl = await this.safeUploadCover(
           userId,
           docRef.id,
           bookData.frontCoverUri,
           'front'
         );
+        if (frontUrl) updates.frontCoverUri = frontUrl;
       }
 
       if (bookData.backCoverUri) {
-        updates.backCoverUri = await this.uploadCover(
+        const backUrl = await this.safeUploadCover(
           userId,
           docRef.id,
           bookData.backCoverUri,
           'back'
         );
+        if (backUrl) updates.backCoverUri = backUrl;
       }
 
       if (Object.keys(updates).length > 0) {
@@ -189,21 +205,23 @@ export class BookService {
       const updates: BookInput = { ...this.sanitize(bookData) } as BookInput;
 
       if (bookData.frontCoverUri) {
-        updates.frontCoverUri = await this.uploadCover(
+        const frontUrl = await this.safeUploadCover(
           userId,
           bookId,
           bookData.frontCoverUri,
           'front'
         );
+        if (frontUrl) updates.frontCoverUri = frontUrl;
       }
 
       if (bookData.backCoverUri) {
-        updates.backCoverUri = await this.uploadCover(
+        const backUrl = await this.safeUploadCover(
           userId,
           bookId,
           bookData.backCoverUri,
           'back'
         );
+        if (backUrl) updates.backCoverUri = backUrl;
       }
       
       await updateDoc(bookRef, {
