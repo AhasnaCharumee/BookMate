@@ -44,6 +44,16 @@ export interface BookInput {
 }
 
 export class BookService {
+  private static sanitize<T extends Record<string, any>>(data: T): Partial<T> {
+    const cleaned: Partial<T> = {};
+    Object.entries(data).forEach(([key, value]) => {
+      if (value !== undefined) {
+        (cleaned as any)[key] = value;
+      }
+    });
+    return cleaned;
+  }
+
   private static async uploadCover(
     userId: string,
     bookId: string,
@@ -125,7 +135,7 @@ export class BookService {
       const now = new Date().toISOString();
       
       const docRef = await addDoc(booksRef, {
-        ...bookData,
+        ...this.sanitize(bookData),
         userId,
         createdAt: now,
         updatedAt: now,
@@ -176,7 +186,7 @@ export class BookService {
       // Use subcollection path: users/{userId}/books/{bookId}
       const bookRef = doc(firestore, 'users', userId, 'books', bookId);
 
-      const updates: BookInput = { ...bookData };
+      const updates: BookInput = { ...this.sanitize(bookData) } as BookInput;
 
       if (bookData.frontCoverUri) {
         updates.frontCoverUri = await this.uploadCover(
@@ -197,7 +207,7 @@ export class BookService {
       }
       
       await updateDoc(bookRef, {
-        ...updates,
+        ...this.sanitize(updates),
         updatedAt: new Date().toISOString(),
       });
     } catch (error: any) {
