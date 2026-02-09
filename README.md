@@ -10,6 +10,7 @@ A beautiful, feature-rich book management application built with **React Native*
 - **Delete Books** - Remove books from your library
 - **Book Details** - View comprehensive information about each book with cover images
 - **Reading Status** - Track books as "To Read", "Reading", or "Completed"
+- **Borrow/Lend Tracking** - Mark books as lent, track who borrowed, and expected return dates
 - **Camera Integration** - Capture book cover photos using device camera
 
 ### 📸 Photo Management
@@ -79,6 +80,9 @@ A beautiful, feature-rich book management application built with **React Native*
 - **Custom Components** - Modular UI components (IconSymbol, IconButton)
 - **Floating Tab Bar** - Custom positioned tab navigation with 30px offset from bottom
 
+## 🤖 Android App
+- Download APK: https://expo.dev/artifacts/eas/cqh25i4iVMARGgw4GWKzRM.apk
+
 ## 📋 Project Structure
 
 ```
@@ -135,6 +139,7 @@ bookMate/
 - **Smart Tab Bar** - Bottom navigation automatically hides on book add/edit forms
 - **Form Field Reset** - Forms now clear automatically after successful book addition
 - **Auto-Refresh System** - Home and Library pages refresh when returning to screen using `useFocusEffect`
+- **Borrow/Lend Flow** - Lend toggle on add/edit, badges in lists, and “Mark Returned” in details
 
 ### 🎨 Complete Theme Overhaul
 - **Emerald/Teal Theme** - Changed from Indigo (#6366f1) to Emerald (#10b981) across entire app

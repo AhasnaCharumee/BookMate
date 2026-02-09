@@ -1,3 +1,4 @@
+import { readAsStringAsync } from 'expo-file-system';
 import {
     addDoc,
     collection,
@@ -5,9 +6,10 @@ import {
     doc,
     getDoc,
     getDocs,
-    updateDoc
+    updateDoc,
 } from 'firebase/firestore';
-import { db as firestore } from './firebase';
+import { getDownloadURL, ref, uploadBytes, uploadString } from 'firebase/storage';
+import { db as firestore, storage } from './firebase';
 
 export interface Book {
   id: string;
@@ -42,6 +44,32 @@ export interface BookInput {
 }
 
 export class BookService {
+  private static async uploadCover(
+    userId: string,
+    bookId: string,
+    uri: string,
+    coverType: 'front' | 'back'
+  ): Promise<string> {
+    if (uri.startsWith('http://') || uri.startsWith('https://')) {
+      return uri;
+    }
+
+    const filePath = `users/${userId}/books/${bookId}/${coverType}-${Date.now()}.jpg`;
+    const storageRef = ref(storage, filePath);
+
+    try {
+      const response = await fetch(uri);
+      const blob = await response.blob();
+      await uploadBytes(storageRef, blob);
+    } catch (error) {
+      const base64 = await readAsStringAsync(uri, {
+        encoding: 'base64' as any,
+      });
+      await uploadString(storageRef, base64, 'base64');
+    }
+
+    return getDownloadURL(storageRef);
+  }
   // Get all books for a user
   static async getUserBooks(userId: string): Promise<Book[]> {
     try {
@@ -98,9 +126,37 @@ export class BookService {
       
       const docRef = await addDoc(booksRef, {
         ...bookData,
+        userId,
         createdAt: now,
         updatedAt: now,
       });
+
+      const updates: Partial<BookInput> = {};
+
+      if (bookData.frontCoverUri) {
+        updates.frontCoverUri = await this.uploadCover(
+          userId,
+          docRef.id,
+          bookData.frontCoverUri,
+          'front'
+        );
+      }
+
+      if (bookData.backCoverUri) {
+        updates.backCoverUri = await this.uploadCover(
+          userId,
+          docRef.id,
+          bookData.backCoverUri,
+          'back'
+        );
+      }
+
+      if (Object.keys(updates).length > 0) {
+        await updateDoc(doc(firestore, 'users', userId, 'books', docRef.id), {
+          ...updates,
+          updatedAt: new Date().toISOString(),
+        });
+      }
       
       console.log('Firestore success, doc id:', docRef.id);
       return docRef.id;
@@ -119,9 +175,29 @@ export class BookService {
     try {
       // Use subcollection path: users/{userId}/books/{bookId}
       const bookRef = doc(firestore, 'users', userId, 'books', bookId);
+
+      const updates: BookInput = { ...bookData };
+
+      if (bookData.frontCoverUri) {
+        updates.frontCoverUri = await this.uploadCover(
+          userId,
+          bookId,
+          bookData.frontCoverUri,
+          'front'
+        );
+      }
+
+      if (bookData.backCoverUri) {
+        updates.backCoverUri = await this.uploadCover(
+          userId,
+          bookId,
+          bookData.backCoverUri,
+          'back'
+        );
+      }
       
       await updateDoc(bookRef, {
-        ...bookData,
+        ...updates,
         updatedAt: new Date().toISOString(),
       });
     } catch (error: any) {
