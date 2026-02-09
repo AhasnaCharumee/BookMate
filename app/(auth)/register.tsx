@@ -51,11 +51,11 @@ export default function RegisterScreen() {
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
       <ScrollView
-        contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', paddingHorizontal: 24, paddingBottom: 24 }}
+        contentContainerStyle={{ flexGrow: 1, justifyContent: 'flex-start', paddingHorizontal: 24, paddingTop: 24, paddingBottom: 80 }}
         keyboardShouldPersistTaps="handled"
       >
         {/* Header */}
-        <View className="items-center mb-8">
+        <View className="items-center mb-4">
           <Ionicons name="book" size={56} color="#10b981" />
           <Text className="text-white text-3xl font-bold mt-4">Create Account</Text>
           <Text className="text-slate-400 text-base mt-2">Join BookMate today</Text>
@@ -132,6 +132,7 @@ export default function RegisterScreen() {
               <Text className="text-emerald-400 font-bold">Login</Text>
             </TouchableOpacity>
           </View>
+          <View style={{ height: 40 }} />
         </View>
       </ScrollView>
     </KeyboardAvoidingView>
