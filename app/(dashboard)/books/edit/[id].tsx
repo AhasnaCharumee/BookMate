@@ -4,14 +4,14 @@ import * as NavigationBar from 'expo-navigation-bar';
 import { router, useLocalSearchParams } from 'expo-router';
 import React, { useEffect, useRef, useState } from 'react';
 import {
-    Alert,
-    Image,
-    Modal,
-    ScrollView,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
+  Alert,
+  Image,
+  Modal,
+  ScrollView,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import GenreDropdown from '../../../../components/genre-dropdown';
@@ -102,9 +102,7 @@ export default function EditBookScreen() {
       try {
         const photo = await cameraRef.current.takePictureAsync({ 
           quality: 0.8,
-          base64: false,
         });
-        
         if (currentCover === 'front') {
           setFrontCoverUri(photo.uri);
         } else {

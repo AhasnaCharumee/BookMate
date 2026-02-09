@@ -1,5 +1,6 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getApp, getApps, initializeApp } from "firebase/app";
-import { getAuth } from "firebase/auth";
+import { getAuth, initializeAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
 
@@ -16,8 +17,21 @@ const firebaseConfig = {
 // Init app
 const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
 
-// Auth - AsyncStorage persistence is handled by AuthContext
-export const auth = getAuth(app);
+// Auth - use AsyncStorage persistence for React Native
+export const auth = (() => {
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const { getReactNativePersistence } = require('firebase/auth/react-native');
+    return initializeAuth(app, {
+      persistence: getReactNativePersistence(AsyncStorage),
+    });
+  } catch (error: any) {
+    if (error?.code === 'auth/already-initialized') {
+      return getAuth(app);
+    }
+    return getAuth(app);
+  }
+})();
 
 export const db = getFirestore(app);
 export const storage = getStorage(app);

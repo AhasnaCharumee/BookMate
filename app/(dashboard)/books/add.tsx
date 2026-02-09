@@ -1,19 +1,18 @@
 import { Ionicons } from '@expo/vector-icons';
 import { CameraView, useCameraPermissions } from 'expo-camera';
-import * as MediaLibrary from 'expo-media-library';
 import { router } from 'expo-router';
 import React, { useRef, useState } from 'react';
 import {
-    Alert,
-    Image,
-    KeyboardAvoidingView,
-    Modal,
-    Platform,
-    ScrollView,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
+  Alert,
+  Image,
+  KeyboardAvoidingView,
+  Modal,
+  Platform,
+  ScrollView,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import GenreDropdown from '../../../components/genre-dropdown';
@@ -81,26 +80,13 @@ export default function AddBookScreen() {
       console.log('Taking picture...');
       const photo = await cameraRef.current.takePictureAsync({
         quality: 0.8,
-        skipProcessing: true,
       });
       console.log('Photo taken:', photo.uri);
 
-      // Use camera file URI for app (avoids content:// issues in APK)
       if (currentCover === 'front') {
         setFrontCoverUri(photo.uri);
       } else {
         setBackCoverUri(photo.uri);
-      }
-
-      // Save to gallery (optional)
-      try {
-        const { status } = await MediaLibrary.requestPermissionsAsync();
-        if (status === 'granted') {
-          const asset = await MediaLibrary.createAssetAsync(photo.uri);
-          console.log('Saved to gallery:', asset.uri);
-        }
-      } catch (permError) {
-        console.log('Gallery save skipped:', permError);
       }
 
       Alert.alert('Success', 'Photo captured!');

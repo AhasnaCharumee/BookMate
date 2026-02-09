@@ -1,14 +1,13 @@
-import { cacheDirectory, copyAsync, deleteAsync, readAsStringAsync } from 'expo-file-system/legacy';
 import {
-    addDoc,
-    collection,
-    deleteDoc,
-    doc,
-    getDoc,
-    getDocs,
-    updateDoc,
+  addDoc,
+  collection,
+  deleteDoc,
+  doc,
+  getDoc,
+  getDocs,
+  updateDoc,
 } from 'firebase/firestore';
-import { getDownloadURL, ref, uploadString } from 'firebase/storage';
+import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 import { db as firestore, storage } from './firebase';
 
 export interface Book {
@@ -71,28 +70,11 @@ export class BookService {
     const filePath = `users/${userId}/books/${bookId}/${coverType}-${Date.now()}.jpg`;
     const storageRef = ref(storage, filePath);
 
-    let sourceUri = uri;
-
-    if (uri.startsWith('content://') && cacheDirectory) {
-      const tempUri = `${cacheDirectory}upload-${bookId}-${coverType}-${Date.now()}.jpg`;
-      try {
-        await copyAsync({ from: uri, to: tempUri });
-        sourceUri = tempUri;
-      } catch {
-        sourceUri = uri;
-      }
-    }
-
-    const base64 = await readAsStringAsync(sourceUri, {
-      encoding: 'base64' as any,
-    });
-    await uploadString(storageRef, base64, 'base64', {
+    const response = await fetch(uri);
+    const blob = await response.blob();
+    await uploadBytes(storageRef, blob, {
       contentType: 'image/jpeg',
     });
-
-    if (sourceUri !== uri && sourceUri.startsWith('file://')) {
-      await deleteAsync(sourceUri, { idempotent: true }).catch(() => undefined);
-    }
 
     return getDownloadURL(storageRef);
   }
@@ -107,7 +89,7 @@ export class BookService {
       return await this.uploadCover(userId, bookId, uri, coverType);
     } catch (error) {
       console.warn('Cover upload failed, keeping existing image:', error);
-      return null;
+      return uri;
     }
   }
   // Get all books for a user
@@ -117,50 +99,11 @@ export class BookService {
       const booksRef = collection(firestore, 'users', userId, 'books');
       const querySnapshot = await getDocs(booksRef);
 
-      const books: Book[] = await Promise.all(
-        querySnapshot.docs.map(async (docSnap) => {
-          const data = docSnap.data() as Book;
-          let frontCoverUri = data.frontCoverUri;
-          let backCoverUri = data.backCoverUri;
-          const updates: Partial<BookInput> = {};
-
-          if (frontCoverUri && (frontCoverUri.startsWith('file://') || frontCoverUri.startsWith('content://'))) {
-            const frontUrl = await this.safeUploadCover(
-              userId,
-              docSnap.id,
-              frontCoverUri,
-              'front'
-            );
-            if (frontUrl) {
-              updates.frontCoverUri = frontUrl;
-              frontCoverUri = frontUrl;
-            }
-          }
-
-          if (backCoverUri && (backCoverUri.startsWith('file://') || backCoverUri.startsWith('content://'))) {
-            const backUrl = await this.safeUploadCover(
-              userId,
-              docSnap.id,
-              backCoverUri,
-              'back'
-            );
-            if (backUrl) {
-              updates.backCoverUri = backUrl;
-              backCoverUri = backUrl;
-            }
-          }
-
-          if (Object.keys(updates).length > 0) {
-            await updateDoc(doc(firestore, 'users', userId, 'books', docSnap.id), {
-              ...updates,
-              updatedAt: new Date().toISOString(),
-            });
-          }
-
-          const { id: _ignoredId, ...rest } = data as any;
-          return { id: docSnap.id, ...rest, frontCoverUri, backCoverUri } as Book;
-        })
-      );
+      const books: Book[] = querySnapshot.docs.map((docSnap) => {
+        const data = docSnap.data() as Book;
+        const { id: _ignoredId, ...rest } = data as any;
+        return { id: docSnap.id, ...rest } as Book;
+      });
       
       // Sort by updated date (newest first)
       return books.sort((a, b) => 
@@ -187,45 +130,8 @@ export class BookService {
       }
       
       const data = bookDoc.data() as Book;
-      let frontCoverUri = data.frontCoverUri;
-      let backCoverUri = data.backCoverUri;
-      const updates: Partial<BookInput> = {};
-
-      if (frontCoverUri && (frontCoverUri.startsWith('file://') || frontCoverUri.startsWith('content://'))) {
-        const frontUrl = await this.safeUploadCover(
-          userId,
-          bookDoc.id,
-          frontCoverUri,
-          'front'
-        );
-        if (frontUrl) {
-          updates.frontCoverUri = frontUrl;
-          frontCoverUri = frontUrl;
-        }
-      }
-
-      if (backCoverUri && (backCoverUri.startsWith('file://') || backCoverUri.startsWith('content://'))) {
-        const backUrl = await this.safeUploadCover(
-          userId,
-          bookDoc.id,
-          backCoverUri,
-          'back'
-        );
-        if (backUrl) {
-          updates.backCoverUri = backUrl;
-          backCoverUri = backUrl;
-        }
-      }
-
-      if (Object.keys(updates).length > 0) {
-        await updateDoc(bookRef, {
-          ...updates,
-          updatedAt: new Date().toISOString(),
-        });
-      }
-
       const { id: _ignoredId, ...rest } = data as any;
-      const book = { id: bookDoc.id, ...rest, frontCoverUri, backCoverUri } as Book;
+      const book = { id: bookDoc.id, ...rest } as Book;
       return book;
     } catch (error: any) {
       throw new Error(`Failed to fetch book: ${error.message}`);
