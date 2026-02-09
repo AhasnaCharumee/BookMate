@@ -10,6 +10,7 @@ import {
     TouchableOpacity,
     View,
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAuth } from '../../hooks/useAuth';
 import { useLoader } from '../../hooks/useLoader';
 import { Book, BookService } from '../../services/bookService';
@@ -17,6 +18,7 @@ import { Book, BookService } from '../../services/bookService';
 export default function HomeScreen() {
   const { user } = useAuth();
   const { showLoader, hideLoader } = useLoader();
+  const insets = useSafeAreaInsets();
   const [books, setBooks] = useState<Book[]>([]);
   const [refreshing, setRefreshing] = useState(false);
 
@@ -185,6 +187,7 @@ export default function HomeScreen() {
               setRefreshing(true);
               loadBooks();
             }}
+            contentContainerStyle={{ paddingBottom: Math.max(24, insets.bottom + 16) }}
           />
         )}
       </View>
