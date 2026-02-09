@@ -12,6 +12,7 @@ import {
     TouchableOpacity,
     View,
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import GenreDropdown from '../../../../components/genre-dropdown';
 import { useAuth } from '../../../../hooks/useAuth';
 import { useLoader } from '../../../../hooks/useLoader';
@@ -21,6 +22,7 @@ export default function EditBookScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const { user } = useAuth();
   const { showLoader, hideLoader } = useLoader();
+  const insets = useSafeAreaInsets();
   const [title, setTitle] = useState('');
   const [author, setAuthor] = useState('');
   const [genre, setGenre] = useState('');
@@ -176,7 +178,10 @@ export default function EditBookScreen() {
         </View>
       </View>
 
-      <ScrollView className="flex-1 px-6 pt-6">
+      <ScrollView
+        className="flex-1 px-6 pt-6"
+        contentContainerStyle={{ paddingBottom: Math.max(24, insets.bottom + 16) }}
+      >
         {/* Required Fields Info */}
         <View className="mb-6 bg-slate-800 rounded-lg p-3">
           <Text className="text-slate-300 text-xs">
