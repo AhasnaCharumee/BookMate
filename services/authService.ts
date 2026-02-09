@@ -143,8 +143,8 @@ export class AuthService {
       'auth/operation-not-allowed': 'Operation not allowed. Please try again.',
       'auth/weak-password': 'Password is too weak. Use at least 6 characters.',
       'auth/user-disabled': 'This account has been disabled.',
-      'auth/user-not-found': 'You are not registered. Please register.',
-      'auth/wrong-password': 'Incorrect password.',
+      'auth/user-not-found': 'Email or password is wrong.',
+      'auth/wrong-password': 'Email or password is wrong.',
       'auth/too-many-requests': 'Too many login attempts. Please try again later.',
     };
 
