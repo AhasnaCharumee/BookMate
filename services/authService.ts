@@ -52,6 +52,7 @@ export class AuthService {
   static async login(email: string, password: string): Promise<User> {
     try {
       const { user } = await signInWithEmailAndPassword(auth, email, password);
+      await this.ensureUserProfile(user, email);
       return user;
     } catch (error) {
       const authError = error as AuthError;
@@ -104,6 +105,31 @@ export class AuthService {
     } catch (error) {
       console.error('Error updating user profile:', error);
       throw error;
+    }
+  }
+
+  /**
+   * Ensure user profile exists in Firestore
+   */
+  private static async ensureUserProfile(user: User, emailOverride?: string): Promise<void> {
+    try {
+      const userRef = doc(firestore, 'users', user.uid);
+      const userDoc = await getDoc(userRef);
+
+      if (!userDoc.exists()) {
+        const email = user.email || emailOverride || '';
+        const userProfile: UserProfile = {
+          uid: user.uid,
+          email,
+          displayName: user.displayName || email.split('@')[0] || 'User',
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        };
+
+        await setDoc(userRef, userProfile, { merge: true });
+      }
+    } catch (error) {
+      console.error('Error ensuring user profile:', error);
     }
   }
 

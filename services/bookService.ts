@@ -51,6 +51,10 @@ export class BookService {
         new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
       );
     } catch (error: any) {
+      const errorCode = error?.code as string | undefined;
+      if (errorCode === 'permission-denied' || errorCode === 'not-found') {
+        return [];
+      }
       throw new Error(`Failed to fetch books: ${error.message}`);
     }
   }
