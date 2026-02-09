@@ -110,11 +110,51 @@ export class BookService {
       // Use subcollection path: users/{userId}/books
       const booksRef = collection(firestore, 'users', userId, 'books');
       const querySnapshot = await getDocs(booksRef);
-      
-      const books: Book[] = [];
-      querySnapshot.forEach((doc) => {
-        books.push({ id: doc.id, ...doc.data() } as Book);
-      });
+
+      const books: Book[] = await Promise.all(
+        querySnapshot.docs.map(async (docSnap) => {
+          const data = docSnap.data() as Book;
+          let frontCoverUri = data.frontCoverUri;
+          let backCoverUri = data.backCoverUri;
+          const updates: Partial<BookInput> = {};
+
+          if (frontCoverUri && (frontCoverUri.startsWith('file://') || frontCoverUri.startsWith('content://'))) {
+            const frontUrl = await this.safeUploadCover(
+              userId,
+              docSnap.id,
+              frontCoverUri,
+              'front'
+            );
+            if (frontUrl) {
+              updates.frontCoverUri = frontUrl;
+              frontCoverUri = frontUrl;
+            }
+          }
+
+          if (backCoverUri && (backCoverUri.startsWith('file://') || backCoverUri.startsWith('content://'))) {
+            const backUrl = await this.safeUploadCover(
+              userId,
+              docSnap.id,
+              backCoverUri,
+              'back'
+            );
+            if (backUrl) {
+              updates.backCoverUri = backUrl;
+              backCoverUri = backUrl;
+            }
+          }
+
+          if (Object.keys(updates).length > 0) {
+            await updateDoc(doc(firestore, 'users', userId, 'books', docSnap.id), {
+              ...updates,
+              updatedAt: new Date().toISOString(),
+            });
+          }
+
+          const { id: _ignoredId, ...rest } = data as any;
+          return { id: docSnap.id, ...rest, frontCoverUri, backCoverUri } as Book;
+        })
+      );
       
       // Sort by updated date (newest first)
       return books.sort((a, b) => 
@@ -140,7 +180,46 @@ export class BookService {
         throw new Error('Book not found');
       }
       
-      const book = { id: bookDoc.id, ...bookDoc.data() } as Book;
+      const data = bookDoc.data() as Book;
+      let frontCoverUri = data.frontCoverUri;
+      let backCoverUri = data.backCoverUri;
+      const updates: Partial<BookInput> = {};
+
+      if (frontCoverUri && (frontCoverUri.startsWith('file://') || frontCoverUri.startsWith('content://'))) {
+        const frontUrl = await this.safeUploadCover(
+          userId,
+          bookDoc.id,
+          frontCoverUri,
+          'front'
+        );
+        if (frontUrl) {
+          updates.frontCoverUri = frontUrl;
+          frontCoverUri = frontUrl;
+        }
+      }
+
+      if (backCoverUri && (backCoverUri.startsWith('file://') || backCoverUri.startsWith('content://'))) {
+        const backUrl = await this.safeUploadCover(
+          userId,
+          bookDoc.id,
+          backCoverUri,
+          'back'
+        );
+        if (backUrl) {
+          updates.backCoverUri = backUrl;
+          backCoverUri = backUrl;
+        }
+      }
+
+      if (Object.keys(updates).length > 0) {
+        await updateDoc(bookRef, {
+          ...updates,
+          updatedAt: new Date().toISOString(),
+        });
+      }
+
+      const { id: _ignoredId, ...rest } = data as any;
+      const book = { id: bookDoc.id, ...rest, frontCoverUri, backCoverUri } as Book;
       return book;
     } catch (error: any) {
       throw new Error(`Failed to fetch book: ${error.message}`);
