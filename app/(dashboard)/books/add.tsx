@@ -85,30 +85,25 @@ export default function AddBookScreen() {
       });
       console.log('Photo taken:', photo.uri);
 
-      // Request gallery permission (with error handling for AUDIO permission issue)
+      // Use camera file URI for app (avoids content:// issues in APK)
+      if (currentCover === 'front') {
+        setFrontCoverUri(photo.uri);
+      } else {
+        setBackCoverUri(photo.uri);
+      }
+
+      // Save to gallery (optional)
       try {
         const { status } = await MediaLibrary.requestPermissionsAsync();
-        if (status !== 'granted') {
-          Alert.alert('Permission Denied', 'Gallery permission is required to save photos');
-          return;
+        if (status === 'granted') {
+          const asset = await MediaLibrary.createAssetAsync(photo.uri);
+          console.log('Saved to gallery:', asset.uri);
         }
       } catch (permError) {
-        console.log('Permission request error (continuing anyway):', permError);
-        // Continue even if permission request fails - we'll try to save anyway
+        console.log('Gallery save skipped:', permError);
       }
 
-      // Save directly to gallery (no copy needed)
-      const asset = await MediaLibrary.createAssetAsync(photo.uri);
-      console.log('Saved to gallery:', asset.uri);
-
-      // Use gallery URI
-      if (currentCover === 'front') {
-        setFrontCoverUri(asset.uri);
-      } else {
-        setBackCoverUri(asset.uri);
-      }
-
-      Alert.alert('Success', 'Photo saved to gallery!');
+      Alert.alert('Success', 'Photo captured!');
       setCameraVisible(false);
       setCurrentCover(null);
     } catch (error: any) {

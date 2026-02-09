@@ -64,6 +64,10 @@ export class BookService {
       return uri;
     }
 
+    if (uri.startsWith('gs://')) {
+      return getDownloadURL(ref(storage, uri));
+    }
+
     const filePath = `users/${userId}/books/${bookId}/${coverType}-${Date.now()}.jpg`;
     const storageRef = ref(storage, filePath);
 
@@ -82,7 +86,9 @@ export class BookService {
     const base64 = await readAsStringAsync(sourceUri, {
       encoding: 'base64' as any,
     });
-    await uploadString(storageRef, base64, 'base64');
+    await uploadString(storageRef, base64, 'base64', {
+      contentType: 'image/jpeg',
+    });
 
     if (sourceUri !== uri && sourceUri.startsWith('file://')) {
       await deleteAsync(sourceUri, { idempotent: true }).catch(() => undefined);
