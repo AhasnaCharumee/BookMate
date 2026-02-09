@@ -1,4 +1,4 @@
-import { readAsStringAsync } from 'expo-file-system/legacy';
+import { cacheDirectory, copyAsync, deleteAsync, readAsStringAsync } from 'expo-file-system/legacy';
 import {
     addDoc,
     collection,
@@ -67,10 +67,26 @@ export class BookService {
     const filePath = `users/${userId}/books/${bookId}/${coverType}-${Date.now()}.jpg`;
     const storageRef = ref(storage, filePath);
 
-    const base64 = await readAsStringAsync(uri, {
+    let sourceUri = uri;
+
+    if (uri.startsWith('content://') && cacheDirectory) {
+      const tempUri = `${cacheDirectory}upload-${bookId}-${coverType}-${Date.now()}.jpg`;
+      try {
+        await copyAsync({ from: uri, to: tempUri });
+        sourceUri = tempUri;
+      } catch {
+        sourceUri = uri;
+      }
+    }
+
+    const base64 = await readAsStringAsync(sourceUri, {
       encoding: 'base64' as any,
     });
     await uploadString(storageRef, base64, 'base64');
+
+    if (sourceUri !== uri && sourceUri.startsWith('file://')) {
+      await deleteAsync(sourceUri, { idempotent: true }).catch(() => undefined);
+    }
 
     return getDownloadURL(storageRef);
   }
@@ -142,8 +158,12 @@ export class BookService {
       const booksRef = collection(firestore, 'users', userId, 'books');
       const now = new Date().toISOString();
       
+      const initialData = this.sanitize(bookData) as BookInput;
+      delete (initialData as any).frontCoverUri;
+      delete (initialData as any).backCoverUri;
+
       const docRef = await addDoc(booksRef, {
-        ...this.sanitize(bookData),
+        ...initialData,
         userId,
         createdAt: now,
         updatedAt: now,
@@ -197,6 +217,9 @@ export class BookService {
       const bookRef = doc(firestore, 'users', userId, 'books', bookId);
 
       const updates: BookInput = { ...this.sanitize(bookData) } as BookInput;
+
+      if (updates.frontCoverUri) delete (updates as any).frontCoverUri;
+      if (updates.backCoverUri) delete (updates as any).backCoverUri;
 
       if (bookData.frontCoverUri) {
         const frontUrl = await this.safeUploadCover(

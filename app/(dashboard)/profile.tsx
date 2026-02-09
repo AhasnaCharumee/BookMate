@@ -10,6 +10,7 @@ import {
     TouchableOpacity,
     View,
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAuth } from '../../hooks/useAuth';
 import { useLoader } from '../../hooks/useLoader';
 import { BookService } from '../../services/bookService';
@@ -30,6 +31,7 @@ const AVATAR_ICONS = [
 export default function ProfileScreen() {
   const { user, logout } = useAuth();
   const { showLoader, hideLoader } = useLoader();
+  const insets = useSafeAreaInsets();
   const [selectedAvatar, setSelectedAvatar] = useState<string>('book-outline');
   const [showAvatarModal, setShowAvatarModal] = useState(false);
   const [stats, setStats] = useState({
@@ -139,7 +141,10 @@ export default function ProfileScreen() {
         <Text className="text-white text-2xl font-bold">Profile</Text>
       </View>
 
-      <ScrollView className="flex-1 px-6 pt-6">
+      <ScrollView
+        className="flex-1 px-6 pt-6"
+        contentContainerStyle={{ paddingBottom: Math.max(24, insets.bottom + 16) }}
+      >
         {/* User Info Card */}
         <View className="bg-slate-900 rounded-xl p-6 mb-6">
           {/* Avatar */}
