@@ -214,14 +214,15 @@ export default function ProfileScreen() {
 
         {/* Logout Button */}
         <TouchableOpacity
-          className="bg-red-600 p-4 rounded-lg flex-row items-center justify-center mb-6"
+          className="bg-red-600 px-6 py-4 rounded-xl flex-row items-center justify-center mb-18"
           onPress={handleLogout}
         >
-          <Ionicons name="log-out" size={24} color="white" />
-          <Text className="text-white text-center font-bold text-lg ml-2">
+          <Ionicons name="log-out" size={26} color="white" />
+          <Text className="text-white text-center font-bold text-lg ml-3">
             Logout
           </Text>
         </TouchableOpacity>
+        <View style={{ height: 28 }} />
       </ScrollView>
 
       {/* Avatar Selection Modal */}
