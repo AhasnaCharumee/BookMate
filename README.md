@@ -140,6 +140,7 @@ bookMate/
 - **Form Field Reset** - Forms now clear automatically after successful book addition
 - **Auto-Refresh System** - Home and Library pages refresh when returning to screen using `useFocusEffect`
 - **Borrow/Lend Flow** - Lend toggle on add/edit, badges in lists, and “Mark Returned” in details
+- **Immersive Book Details** - Android system navigation bar auto-hides on Book Details screen
 
 ### 🎨 Complete Theme Overhaul
 - **Emerald/Teal Theme** - Changed from Indigo (#6366f1) to Emerald (#10b981) across entire app

@@ -1,5 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import { router, useLocalSearchParams } from 'expo-router';
+import * as NavigationBar from 'expo-navigation-bar';
 import React, { useEffect, useState } from 'react';
 import {
     Alert,
@@ -24,6 +25,23 @@ export default function BookDetailsScreen() {
   useEffect(() => {
     loadBook();
   }, [id]);
+
+  useEffect(() => {
+    const hideNavBar = async () => {
+      try {
+        await NavigationBar.setBehaviorAsync('inset-swipe');
+        await NavigationBar.setVisibilityAsync('hidden');
+      } catch {
+        // Ignore if not supported
+      }
+    };
+
+    hideNavBar();
+
+    return () => {
+      NavigationBar.setVisibilityAsync('visible').catch(() => undefined);
+    };
+  }, []);
 
   const loadBook = async () => {
     if (!user || !id) return;
