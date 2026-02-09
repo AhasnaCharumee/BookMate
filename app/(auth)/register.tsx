@@ -51,7 +51,7 @@ export default function RegisterScreen() {
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
       <ScrollView
-        contentContainerStyle={{ flexGrow: 1, justifyContent: 'flex-start', paddingHorizontal: 24, paddingTop: 24, paddingBottom: 80 }}
+        contentContainerStyle={{ flexGrow: 1, justifyContent: 'flex-start', paddingHorizontal: 24, paddingTop: 48, paddingBottom: 80 }}
         keyboardShouldPersistTaps="handled"
       >
         {/* Header */}
