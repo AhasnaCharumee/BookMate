@@ -3,12 +3,12 @@ import { router } from 'expo-router';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import React, { useEffect, useState } from 'react';
 import {
-  Alert,
-  Modal,
-  ScrollView,
-  Text,
-  TouchableOpacity,
-  View,
+    Alert,
+    Modal,
+    ScrollView,
+    Text,
+    TouchableOpacity,
+    View,
 } from 'react-native';
 import { useAuth } from '../../hooks/useAuth';
 import { useLoader } from '../../hooks/useLoader';
@@ -55,7 +55,11 @@ export default function ProfileScreen() {
       if (userDoc.exists() && userDoc.data().avatar) {
         setSelectedAvatar(userDoc.data().avatar);
       }
-    } catch (error) {
+    } catch (error: any) {
+      const errorCode = error?.code as string | undefined;
+      if (errorCode === 'permission-denied' || errorCode === 'not-found') {
+        return;
+      }
       console.error('Error loading avatar:', error);
     }
   };
@@ -94,6 +98,11 @@ export default function ProfileScreen() {
       setShowAvatarModal(false);
       Alert.alert('Success', 'Avatar updated!');
     } catch (error: any) {
+      const errorCode = error?.code as string | undefined;
+      if (errorCode === 'permission-denied') {
+        Alert.alert('Error', 'Avatar update not allowed for this account.');
+        return;
+      }
       console.error('Error updating avatar:', error);
       Alert.alert('Error', 'Failed to update avatar');
     } finally {
