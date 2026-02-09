@@ -1,5 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import { CameraView, useCameraPermissions } from 'expo-camera';
+import * as MediaLibrary from 'expo-media-library';
 import { router } from 'expo-router';
 import React, { useRef, useState } from 'react';
 import {
@@ -88,6 +89,11 @@ export default function AddBookScreen() {
       } else {
         setBackCoverUri(photo.uri);
       }
+
+      // Save to gallery (optional)
+      MediaLibrary.createAssetAsync(photo.uri)
+        .then((asset) => console.log('Saved to gallery:', asset.uri))
+        .catch((error) => console.log('Gallery save skipped:', error));
 
       Alert.alert('Success', 'Photo captured!');
       setCameraVisible(false);
