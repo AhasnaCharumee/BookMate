@@ -340,7 +340,7 @@ export default function AddBookScreen() {
 
         {/* Add Button */}
         <TouchableOpacity
-          className="bg-emerald-600 p-4 rounded-lg active:bg-emerald-700"
+          className="bg-emerald-600 p-4 rounded-lg active:bg-emerald-700 mb-6"
           onPress={handleAddBook}
         >
           <Text className="text-white text-center font-bold text-lg">
@@ -349,7 +349,7 @@ export default function AddBookScreen() {
         </TouchableOpacity>
 
         {/* Safe area bottom spacing */}
-        <View style={{ height: Math.max(16, insets.bottom) }} />
+        <View style={{ height: Math.max(32, insets.bottom + 16) }} />
       </ScrollView>
 
       {/* Camera Modal */}
