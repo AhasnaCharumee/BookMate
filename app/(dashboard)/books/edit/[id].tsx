@@ -1,5 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import { CameraView, useCameraPermissions } from 'expo-camera';
+import * as NavigationBar from 'expo-navigation-bar';
 import { router, useLocalSearchParams } from 'expo-router';
 import React, { useEffect, useRef, useState } from 'react';
 import {
@@ -42,6 +43,23 @@ export default function EditBookScreen() {
   useEffect(() => {
     loadBook();
   }, [id]);
+
+  useEffect(() => {
+    const hideNavBar = async () => {
+      try {
+        await NavigationBar.setBehaviorAsync('inset-swipe');
+        await NavigationBar.setVisibilityAsync('hidden');
+      } catch {
+        // Ignore if not supported
+      }
+    };
+
+    hideNavBar();
+
+    return () => {
+      NavigationBar.setVisibilityAsync('visible').catch(() => undefined);
+    };
+  }, []);
 
   const loadBook = async () => {
     if (!user || !id) return;

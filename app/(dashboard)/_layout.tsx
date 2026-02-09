@@ -26,7 +26,7 @@ export default function DashboardLayout() {
           paddingBottom: insets.bottom,
           paddingTop: 8,
           position: 'absolute',
-          bottom: 0,
+          bottom: 10,
           left: 10,
           right: 10,
           borderRadius: 16,

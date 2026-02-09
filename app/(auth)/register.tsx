@@ -32,8 +32,12 @@ export default function RegisterScreen() {
     showLoader();
     try {
       await AuthService.register(email, password, name);
-      Alert.alert('Success', 'Account created successfully!');
-      // Navigation will happen automatically through AuthContext
+      Alert.alert('Success', 'Account created successfully!', [
+        {
+          text: 'OK',
+          onPress: () => router.replace('/(auth)/login'),
+        },
+      ]);
     } catch (error: any) {
       Alert.alert('Registration Failed', error.message);
     } finally {
