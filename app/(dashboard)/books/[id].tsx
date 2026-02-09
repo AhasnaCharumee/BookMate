@@ -9,6 +9,7 @@ import {
     TouchableOpacity,
     View,
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAuth } from '../../../hooks/useAuth';
 import { useLoader } from '../../../hooks/useLoader';
 import { Book, BookService } from '../../../services/bookService';
@@ -17,6 +18,7 @@ export default function BookDetailsScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const { user } = useAuth();
   const { showLoader, hideLoader } = useLoader();
+  const insets = useSafeAreaInsets();
   const [book, setBook] = useState<Book | null>(null);
 
   useEffect(() => {
@@ -144,7 +146,10 @@ export default function BookDetailsScreen() {
         </View>
       </View>
 
-      <ScrollView className="flex-1 px-6 pt-6">
+      <ScrollView
+        className="flex-1 px-6 pt-6"
+        contentContainerStyle={{ paddingBottom: Math.max(24, insets.bottom + 16) }}
+      >
         {/* Book Covers */}
         {(book.frontCoverUri || book.backCoverUri) && (
           <View className="mb-4">
