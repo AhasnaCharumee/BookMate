@@ -19,6 +19,10 @@ export interface Book {
   backCoverUri?: string;
   description?: string;
   genre?: string;
+  isLent?: boolean;
+  lentTo?: string | null;
+  lentAt?: string | null;
+  expectedReturnAt?: string | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -31,6 +35,10 @@ export interface BookInput {
   backCoverUri?: string;
   description?: string;
   genre?: string;
+  isLent?: boolean;
+  lentTo?: string | null;
+  lentAt?: string | null;
+  expectedReturnAt?: string | null;
 }
 
 export class BookService {

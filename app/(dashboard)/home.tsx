@@ -3,12 +3,12 @@ import { useFocusEffect } from '@react-navigation/native';
 import { router } from 'expo-router';
 import React, { useCallback, useEffect, useState } from 'react';
 import {
-  Alert,
-  FlatList,
-  Image,
-  Text,
-  TouchableOpacity,
-  View,
+    Alert,
+    FlatList,
+    Image,
+    Text,
+    TouchableOpacity,
+    View,
 } from 'react-native';
 import { useAuth } from '../../hooks/useAuth';
 import { useLoader } from '../../hooks/useLoader';
@@ -114,10 +114,17 @@ export default function HomeScreen() {
           <View className="flex-1">
             <Text className="text-white text-lg font-bold">{item.title}</Text>
             <Text className="text-slate-400 mt-1">by {item.author}</Text>
-            <View className={`${getStatusColor(item.status)} px-3 py-1 rounded-full mt-2 self-start`}>
-              <Text className="text-white text-xs font-bold">
-                {getStatusText(item.status)}
-              </Text>
+            <View className="flex-row items-center gap-2 mt-2">
+              <View className={`${getStatusColor(item.status)} px-3 py-1 rounded-full`}>
+                <Text className="text-white text-xs font-bold">
+                  {getStatusText(item.status)}
+                </Text>
+              </View>
+              {item.isLent && (
+                <View className="bg-amber-500 px-3 py-1 rounded-full">
+                  <Text className="text-white text-xs font-bold">Lent</Text>
+                </View>
+              )}
             </View>
           </View>
           

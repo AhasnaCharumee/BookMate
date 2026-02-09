@@ -4,16 +4,16 @@ import * as MediaLibrary from 'expo-media-library';
 import { router } from 'expo-router';
 import React, { useRef, useState } from 'react';
 import {
-  Alert,
-  Image,
-  KeyboardAvoidingView,
-  Modal,
-  Platform,
-  ScrollView,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
+    Alert,
+    Image,
+    KeyboardAvoidingView,
+    Modal,
+    Platform,
+    ScrollView,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    View,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import GenreDropdown from '../../../components/genre-dropdown';
@@ -40,6 +40,9 @@ export default function AddBookScreen() {
   const [genre, setGenre] = useState('');
   const [description, setDescription] = useState('');
   const [status, setStatus] = useState<'reading' | 'completed' | 'to-read'>('to-read');
+  const [isLent, setIsLent] = useState(false);
+  const [lentTo, setLentTo] = useState('');
+  const [expectedReturnAt, setExpectedReturnAt] = useState('');
   const [frontCoverUri, setFrontCoverUri] = useState<string | null>(null);
   const [backCoverUri, setBackCoverUri] = useState<string | null>(null);
   const [cameraVisible, setCameraVisible] = useState(false);
@@ -142,6 +145,12 @@ export default function AddBookScreen() {
       if (description) bookData.description = description;
       if (frontCoverUri) bookData.frontCoverUri = frontCoverUri;
       if (backCoverUri) bookData.backCoverUri = backCoverUri;
+      if (isLent) {
+        bookData.isLent = true;
+        bookData.lentTo = lentTo || null;
+        bookData.lentAt = new Date().toISOString();
+        bookData.expectedReturnAt = expectedReturnAt || null;
+      }
 
       const bookId = await BookService.addBook(user.uid, bookData);
 
@@ -156,6 +165,9 @@ export default function AddBookScreen() {
       setGenre('');
       setDescription('');
       setStatus('to-read');
+      setIsLent(false);
+      setLentTo('');
+      setExpectedReturnAt('');
       setFrontCoverUri(null);
       setBackCoverUri(null);
 
@@ -276,6 +288,46 @@ export default function AddBookScreen() {
             <StatusButton value="reading" label="Reading" />
             <StatusButton value="completed" label="Completed" />
           </View>
+        </View>
+
+        {/* Lending Section */}
+        <View className="mb-6">
+          <Text className="text-slate-400 text-sm mb-2">Lending</Text>
+          <TouchableOpacity
+            onPress={() => setIsLent(!isLent)}
+            className={`p-3 rounded-lg border-2 ${
+              isLent ? 'bg-amber-500 border-amber-500' : 'bg-slate-800 border-slate-700'
+            }`}
+          >
+            <Text className={`text-center font-bold ${isLent ? 'text-white' : 'text-slate-400'}`}>
+              {isLent ? 'Lent Out' : 'Not Lent'}
+            </Text>
+          </TouchableOpacity>
+
+          {isLent && (
+            <View className="mt-4">
+              <View className="mb-4">
+                <Text className="text-slate-400 text-sm mb-2">Lent To (Name)</Text>
+                <TextInput
+                  className="bg-slate-800 text-white p-4 rounded-lg"
+                  placeholder="e.g., Sahan"
+                  placeholderTextColor="#64748b"
+                  value={lentTo}
+                  onChangeText={setLentTo}
+                />
+              </View>
+              <View>
+                <Text className="text-slate-400 text-sm mb-2">Expected Return (YYYY-MM-DD)</Text>
+                <TextInput
+                  className="bg-slate-800 text-white p-4 rounded-lg"
+                  placeholder="2026-02-28"
+                  placeholderTextColor="#64748b"
+                  value={expectedReturnAt}
+                  onChangeText={setExpectedReturnAt}
+                />
+              </View>
+            </View>
+          )}
         </View>
 
         {/* Book Cover Photo */}

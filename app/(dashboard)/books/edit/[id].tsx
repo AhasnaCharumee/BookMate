@@ -3,14 +3,14 @@ import { CameraView, useCameraPermissions } from 'expo-camera';
 import { router, useLocalSearchParams } from 'expo-router';
 import React, { useEffect, useRef, useState } from 'react';
 import {
-  Alert,
-  Image,
-  Modal,
-  ScrollView,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
+    Alert,
+    Image,
+    Modal,
+    ScrollView,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    View,
 } from 'react-native';
 import GenreDropdown from '../../../../components/genre-dropdown';
 import { useAuth } from '../../../../hooks/useAuth';
@@ -25,6 +25,10 @@ export default function EditBookScreen() {
   const [author, setAuthor] = useState('');
   const [genre, setGenre] = useState('');
   const [status, setStatus] = useState<'reading' | 'completed' | 'to-read'>('to-read');
+  const [isLent, setIsLent] = useState(false);
+  const [lentTo, setLentTo] = useState('');
+  const [lentAt, setLentAt] = useState<string | null>(null);
+  const [expectedReturnAt, setExpectedReturnAt] = useState('');
   const [frontCoverUri, setFrontCoverUri] = useState<string | null>(null);
   const [backCoverUri, setBackCoverUri] = useState<string | null>(null);
   const [cameraVisible, setCameraVisible] = useState(false);
@@ -47,6 +51,10 @@ export default function EditBookScreen() {
       setAuthor(book.author);
       setGenre(book.genre || '');
       setStatus(book.status);
+      setIsLent(!!book.isLent);
+      setLentTo(book.lentTo || '');
+      setLentAt(book.lentAt || null);
+      setExpectedReturnAt(book.expectedReturnAt || '');
       setFrontCoverUri(book.frontCoverUri || null);
       setBackCoverUri(book.backCoverUri || null);
     } catch (error: any) {
@@ -112,6 +120,17 @@ export default function EditBookScreen() {
       if (genre) bookData.genre = genre;
       if (frontCoverUri) bookData.frontCoverUri = frontCoverUri;
       if (backCoverUri) bookData.backCoverUri = backCoverUri;
+      if (isLent) {
+        bookData.isLent = true;
+        bookData.lentTo = lentTo || null;
+        bookData.lentAt = lentAt || new Date().toISOString();
+        bookData.expectedReturnAt = expectedReturnAt || null;
+      } else {
+        bookData.isLent = false;
+        bookData.lentTo = null;
+        bookData.lentAt = null;
+        bookData.expectedReturnAt = null;
+      }
 
       await BookService.updateBook(user.uid, id, bookData);
       
@@ -251,6 +270,46 @@ export default function EditBookScreen() {
             <StatusButton value="reading" label="Reading" />
             <StatusButton value="completed" label="Completed" />
           </View>
+        </View>
+
+        {/* Lending Section */}
+        <View className="mb-6">
+          <Text className="text-slate-400 text-sm mb-2">Lending</Text>
+          <TouchableOpacity
+            onPress={() => setIsLent(!isLent)}
+            className={`p-3 rounded-lg border-2 ${
+              isLent ? 'bg-amber-500 border-amber-500' : 'bg-slate-800 border-slate-700'
+            }`}
+          >
+            <Text className={`text-center font-bold ${isLent ? 'text-white' : 'text-slate-400'}`}>
+              {isLent ? 'Lent Out' : 'Not Lent'}
+            </Text>
+          </TouchableOpacity>
+
+          {isLent && (
+            <View className="mt-4">
+              <View className="mb-4">
+                <Text className="text-slate-400 text-sm mb-2">Lent To (Name)</Text>
+                <TextInput
+                  className="bg-slate-800 text-white p-4 rounded-lg"
+                  placeholder="e.g., Sahan"
+                  placeholderTextColor="#64748b"
+                  value={lentTo}
+                  onChangeText={setLentTo}
+                />
+              </View>
+              <View>
+                <Text className="text-slate-400 text-sm mb-2">Expected Return (YYYY-MM-DD)</Text>
+                <TextInput
+                  className="bg-slate-800 text-white p-4 rounded-lg"
+                  placeholder="2026-02-28"
+                  placeholderTextColor="#64748b"
+                  value={expectedReturnAt}
+                  onChangeText={setExpectedReturnAt}
+                />
+              </View>
+            </View>
+          )}
         </View>
 
         {/* Update Button */}

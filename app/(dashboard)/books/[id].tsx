@@ -69,6 +69,37 @@ export default function BookDetailsScreen() {
     router.push(`/(dashboard)/books/edit/${id}`);
   };
 
+  const handleMarkReturned = async () => {
+    if (!user || !id || !book) return;
+    showLoader();
+    try {
+      await BookService.updateBook(user.uid, id, {
+        title: book.title,
+        author: book.author,
+        status: book.status,
+        frontCoverUri: book.frontCoverUri,
+        backCoverUri: book.backCoverUri,
+        description: book.description,
+        genre: book.genre,
+        isLent: false,
+        lentTo: null,
+        lentAt: null,
+        expectedReturnAt: null,
+      });
+      setBook({
+        ...book,
+        isLent: false,
+        lentTo: null,
+        lentAt: null,
+        expectedReturnAt: null,
+      });
+    } catch (error: any) {
+      Alert.alert('Error', 'Failed to update lending status');
+    } finally {
+      hideLoader();
+    }
+  };
+
   if (!book) return null;
 
   const getStatusColor = (status: string) => {
@@ -173,6 +204,35 @@ export default function BookDetailsScreen() {
             <View className="flex-row items-center mb-4">
               <Ionicons name="pricetag" size={20} color="#64748b" />
               <Text className="text-slate-400 text-lg ml-2">{book.genre}</Text>
+            </View>
+          )}
+
+          {/* Lending Info */}
+          {book.isLent && (
+            <View className="bg-slate-800 rounded-lg p-4 mb-4">
+              <View className="flex-row items-center mb-2">
+                <Ionicons name="people" size={18} color="#f59e0b" />
+                <Text className="text-amber-400 font-semibold ml-2">Lent Out</Text>
+              </View>
+              {book.lentTo && (
+                <Text className="text-slate-300">To: {book.lentTo}</Text>
+              )}
+              {book.lentAt && (
+                <Text className="text-slate-400 text-sm mt-1">
+                  Lent on: {new Date(book.lentAt).toLocaleDateString()}
+                </Text>
+              )}
+              {book.expectedReturnAt && (
+                <Text className="text-slate-400 text-sm mt-1">
+                  Expected: {book.expectedReturnAt}
+                </Text>
+              )}
+              <TouchableOpacity
+                onPress={handleMarkReturned}
+                className="bg-emerald-600 px-4 py-2 rounded-lg mt-3"
+              >
+                <Text className="text-white font-bold text-center">Mark Returned</Text>
+              </TouchableOpacity>
             </View>
           )}
 
