@@ -56,7 +56,8 @@ export class AuthService {
       return user;
     } catch (error) {
       const authError = error as AuthError;
-      throw new Error(this.getErrorMessage(authError.code));
+      const errorCode = authError?.code || 'auth/invalid-credential';
+      throw new Error(this.getErrorMessage(errorCode));
     }
   }
 
@@ -145,6 +146,8 @@ export class AuthService {
       'auth/user-disabled': 'This account has been disabled.',
       'auth/user-not-found': 'Email or password is wrong.',
       'auth/wrong-password': 'Email or password is wrong.',
+      'auth/invalid-credential': 'Email or password is wrong.',
+      'auth/invalid-login-credentials': 'Email or password is wrong.',
       'auth/too-many-requests': 'Too many login attempts. Please try again later.',
     };
 
