@@ -323,7 +323,7 @@ npx expo run:android
 4. Auto-login on next app open (sessions are persisted)
 ---
 
-## 📱 APK BUILD GUIDE (For Viva/Presentation)
+## 📱 APK BUILD GUIDE 
 
 ### Quick Start (Copy-Paste Commands)
 
