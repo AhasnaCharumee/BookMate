@@ -81,7 +81,10 @@ A beautiful, feature-rich book management application built with **React Native*
 - **Floating Tab Bar** - Custom positioned tab navigation with 30px offset from bottom
 
 ## 🤖 Android App
-- Download APK: https://expo.dev/artifacts/eas/cqh25i4iVMARGgw4GWKzRM.apk
+- Download APK: https://expo.dev/artifacts/eas/iSBMQJCy1NZTHQp52LjvmP.apk
+
+## 🎥 Demo Video
+- YouTube: <ADD_YOUTUBE_LINK_HERE>
 
 ## 📋 Project Structure
 
