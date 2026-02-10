@@ -84,7 +84,7 @@ A beautiful, feature-rich book management application built with **React Native*
 - Download APK: https://expo.dev/artifacts/eas/iSBMQJCy1NZTHQp52LjvmP.apk
 
 ## 🎥 Demo Video
-- YouTube: <ADD_YOUTUBE_LINK_HERE>
+ YouTube: [https://youtu.be/VbRi6YIPF5w]
 
 ## 📋 Project Structure
 
